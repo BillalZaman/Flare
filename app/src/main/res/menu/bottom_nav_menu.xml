@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_News"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_home_24"
-        android:title="News Feed" />
+        android:title="@string/news_feed" />
     <item
         android:id="@+id/action_Profile"
         android:enabled="true"
-        android:icon="@drawable/ic_baseline_home_24"
-        android:title="Profile" />
+        android:icon="@drawable/ic_profile"
+        android:title="@string/profile" />
+    <item
+        android:id="@+id/action_Find_Friend"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_find_in_page_24"
+        android:title="@string/find_friend" />
     <item
         android:id="@+id/action_Chat"
         android:enabled="true"
-        android:icon="@drawable/ic_baseline_home_24"
-        android:title="Chat"/>
+        android:icon="@drawable/ic_baseline_chat_24"
+        android:title="@string/chat" />
     <item
         android:id="@+id/action_Setting"
         android:enabled="true"
-        android:icon="@drawable/ic_baseline_home_24"
-        android:title="Setting" />
+        android:icon="@drawable/ic_baseline_more_vert_24"
+        android:title="@string/more" />
 </menu>

@@ -38,7 +38,7 @@ public class ChatFragment extends Fragment {
         chatAdapter = new ChatAdapter(getContext());
         data = new ArrayList<>();
         for(int i=0; i<= 20; i++) {
-            data.add(new ChatModel("John Doe", ""+i+12));
+            data.add(new ChatModel("John Doe", ""+i+12, "See you Tomorrow then!",""));
         }
         chatAdapter.setData(data);
         binding.recyclerview.setAdapter(chatAdapter);

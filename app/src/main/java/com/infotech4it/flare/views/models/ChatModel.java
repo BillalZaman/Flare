@@ -7,10 +7,14 @@ public class ChatModel {
     private String userImage;
     private String userName;
     private String userMessage;
+    private String userLastMessage;
+    private String userCurrentLocation;
 
-    public ChatModel(String userName, String userMessage) {
+    public ChatModel(String userName, String userMessage, String userLastMessage, String userCurrentLocation) {
         this.userName = userName;
         this.userMessage = userMessage;
+        this.userLastMessage = userLastMessage;
+        this.userCurrentLocation = userCurrentLocation;
     }
 
     public String getUserImage() {
@@ -35,5 +39,21 @@ public class ChatModel {
 
     public void setUserMessage(String userMessage) {
         this.userMessage = userMessage;
+    }
+
+    public String getUserLastMessage() {
+        return userLastMessage;
+    }
+
+    public void setUserLastMessage(String userLastMessage) {
+        this.userLastMessage = userLastMessage;
+    }
+
+    public String getUserCurrentLocation() {
+        return userCurrentLocation;
+    }
+
+    public void setUserCurrentLocation(String userCurrentLocation) {
+        this.userCurrentLocation = userCurrentLocation;
     }
 }

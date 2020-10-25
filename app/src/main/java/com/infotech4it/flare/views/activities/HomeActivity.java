@@ -12,6 +12,7 @@ import com.infotech4it.flare.R;
 import com.infotech4it.flare.databinding.ActivityHomeBinding;
 import com.infotech4it.flare.fragments.ChatFragment;
 import com.infotech4it.flare.fragments.FeedFragment;
+import com.infotech4it.flare.fragments.FindFriendFragment;
 import com.infotech4it.flare.fragments.ProfileFragment;
 import com.infotech4it.flare.fragments.SettingFragment;
 import com.infotech4it.flare.helpers.UIHelper;
@@ -22,6 +23,7 @@ public class HomeActivity extends AppCompatActivity implements MoreInterface, Ch
     private ActivityHomeBinding binding;
     private FeedFragment feedFragment = new FeedFragment();
     private ProfileFragment profileFragment = new ProfileFragment();
+    private FindFriendFragment findFriend = new FindFriendFragment();
     private ChatFragment chatFragment = new ChatFragment();
     private SettingFragment settingFragment = new SettingFragment();
 
@@ -40,29 +42,30 @@ public class HomeActivity extends AppCompatActivity implements MoreInterface, Ch
     }
 
     private void settingBottomNav() {
-        binding.bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_News: {
-                        UIHelper.replaceFragment(HomeActivity.this, R.id.framelayout, feedFragment);
-                        break;
-                    }
-                    case R.id.action_Profile: {
-                        UIHelper.replaceFragment(HomeActivity.this, R.id.framelayout, profileFragment);
-                        break;
-                    }
-                    case R.id.action_Chat: {
-                        UIHelper.replaceFragment(HomeActivity.this, R.id.framelayout, chatFragment);
-                        break;
-                    }
-                    case R.id.action_Setting: {
-                        UIHelper.replaceFragment(HomeActivity.this, R.id.framelayout, settingFragment);
-                        break;
-                    }
+        binding.bottomNavigation.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.action_News: {
+                    UIHelper.replaceFragment(HomeActivity.this, R.id.framelayout, feedFragment);
+                    break;
                 }
-                return true;
+                case R.id.action_Profile: {
+                    UIHelper.replaceFragment(HomeActivity.this, R.id.framelayout, profileFragment);
+                    break;
+                }
+                case R.id.action_Find_Friend:{
+                    UIHelper.replaceFragment(HomeActivity.this, R.id.framelayout, findFriend);
+                    break;
+                }
+                case R.id.action_Chat: {
+                    UIHelper.replaceFragment(HomeActivity.this, R.id.framelayout, chatFragment);
+                    break;
+                }
+                case R.id.action_Setting: {
+                    UIHelper.replaceFragment(HomeActivity.this, R.id.framelayout, settingFragment);
+                    break;
+                }
             }
+            return true;
         });
     }
 
@@ -104,6 +107,6 @@ public class HomeActivity extends AppCompatActivity implements MoreInterface, Ch
 
     @Override
     public void chatClick(int position) {
-
+        UIHelper.openActivity(this, ChatDetailActivity.class);
     }
 }

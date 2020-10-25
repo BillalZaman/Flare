@@ -41,5 +41,10 @@
     <string name="select_option">Select Option</string>
     <string name="camera_permission_error">Camera Permission error</string>
     <string name="cancel_btn">Cancel</string>
+    <string name="news_feed">News Feed</string>
+    <string name="profile">Profile</string>
+    <string name="find_friend">Find Friend</string>
+    <string name="chat">Chat</string>
+    <string name="more">More</string>
 
 </resources>
