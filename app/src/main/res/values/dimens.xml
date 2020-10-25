@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="extrasmall">10sp</dimen>
+    <dimen name="textsmall">12sp</dimen>
+    <dimen name="textfort">14sp</dimen>
+    <dimen name="textnormal">16sp</dimen>
+    <dimen name="textnormallarge">18sp</dimen>
+    <dimen name="textlarge">20sp</dimen>
+    <dimen name="large">22sp</dimen>
+
+    <dimen name="nav_drawer_width">280dp</dimen>
+    <dimen name="activity_padding_horizontal">16dp</dimen>
+    <dimen name="padd_10">10dp</dimen>
+    <dimen name="ic_delete">30dp</dimen>
+    <dimen name="thumbnail">90dp</dimen>
+
+</resources>

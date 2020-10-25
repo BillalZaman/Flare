@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">Flare</string>
+    <string name="hint_email">Enter your Email</string>
+    <string name="password_hint">Enter your Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="account_regis">Don\'t have an account? Register Now</string>
+    <string name="signup_txt">Please fill in your information to signup</string>
+    <string name="name_hint">Enter your name</string>
+    <string name="terms"><![CDATA[Terms & Conditions]]></string>
+
+    <!-- navigation drawer item labels  -->
+    <string-array name="nav_drawer_labels">
+        <item>@string/app_name</item>
+        <item>@string/app_name</item>
+        <item>@string/app_name</item>
+        <item>@string/app_name</item>
+        <item>@string/app_name</item>
+        <item>@string/app_name</item>
+    </string-array>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="call_confirm"><![CDATA[Call me & Confirm]]></string>
+    <string name="cancel_order">Cancel the entire order</string>
+    <string name="remove_order">Remove if from my order</string>
+    <string name="btn_apply">Apply</string>
+    <string name="add_to_cart">Add to Cart</string>
+    <string name="variations">Variations</string>
+    <string name="one_var">Select one variation</string>
+    <string name="login">Login</string>
+    <string name="hint_num">Enter your contact number</string>
+    <string name="password_again_hint">Enter your password again</string>
+    <string name="register">Register</string>
+
+    <string name="take_photo">Take Photo</string>
+    <string name="chhose_from_gallery">Choose From Gallery</string>
+    <string name="select_option">Select Option</string>
+    <string name="camera_permission_error">Camera Permission error</string>
+    <string name="cancel_btn">Cancel</string>
+
+</resources>

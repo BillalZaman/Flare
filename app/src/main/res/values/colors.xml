@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#001942</color>
+    <color name="colorPrimaryDark">#043078</color>
+    <color name="colorAccent">#191919</color>
+    <color name="red">#7A0909</color>
+    <color name="black">#000000</color>
+    <color name="black_light">#424242</color>
+    <color name="white">#ffffff</color>
+    <color name="unSelectTabColor">#f7f7f7</color>
+    <color name="unSelectedTextColor">#99ffffff</color>
+    <color name="grey_light">#61000000</color>
+    <color name="grey_vlight">#31000000</color>
+</resources>
