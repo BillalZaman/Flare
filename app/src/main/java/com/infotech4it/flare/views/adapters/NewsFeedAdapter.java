@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.infotech4it.flare.R;
 import com.infotech4it.flare.databinding.ItemListNewsfeedBinding;
+import com.infotech4it.flare.helpers.UIHelper;
 import com.infotech4it.flare.views.models.NewsFeedModel;
 
 import java.util.ArrayList;
@@ -46,6 +47,21 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<NewsFeedAdapter.ViewHo
         Glide.with(context).load(R.drawable.nature).into(holder.binding.imgNews);
         Glide.with(context).load(R.drawable.nature).into(holder.binding.imgUser);
 
+        holder.binding.txtLike.setOnClickListener(v -> {
+            UIHelper.showLongToastInCenter(context, "Like");
+        });
+
+        holder.binding.txtComment.setOnClickListener(v -> {
+            UIHelper.showLongToastInCenter(context, "Comment");
+        });
+
+        holder.binding.txtShare.setOnClickListener(v -> {
+            UIHelper.showLongToastInCenter(context, "Share");
+        });
+
+        holder.binding.txtTrack.setOnClickListener(v -> {
+            UIHelper.showLongToastInCenter(context, "Track");
+        });
     }
 
     @Override

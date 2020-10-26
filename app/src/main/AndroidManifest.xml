@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_circle"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".views.activities.ChatDetailActivity"/>
+        <activity android:name=".views.activities.UserFriendListActivity"></activity>
+        <activity android:name=".views.activities.ChatDetailActivity" />
         <activity android:name=".views.activities.PostActivity" />
         <activity android:name=".views.activities.FeedbackActivity" />
         <activity android:name=".views.activities.ChangePasswordActivity" />

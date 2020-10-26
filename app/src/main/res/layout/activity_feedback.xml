@@ -33,9 +33,9 @@
                 android:layout_marginRight="40dp"
                 android:fontFamily="@font/poppins_medium"
                 android:gravity="center"
-                android:text="Forgot Password"
+                android:text="Feedback"
                 android:textColor="@color/white"
-                android:textSize="@dimen/textnormallarge"
+                android:textSize="@dimen/textnormal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imgBack"
@@ -59,24 +59,75 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/text_input_layout"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="60dp"
             android:layout_marginEnd="16dp"
             android:hint="@string/hint_email"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:boxCornerRadiusBottomEnd="50dp"
+            app:boxCornerRadiusBottomStart="50dp"
+            app:boxCornerRadiusTopEnd="50dp"
+            app:boxCornerRadiusTopStart="50dp"
+            app:helperTextEnabled="true"
+            app:errorEnabled="true"
+            app:helperTextTextColor="@color/colorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView9"
-            app:layout_constraintVertical_bias="0.120000005">
+            app:layout_constraintTop_toBottomOf="@+id/tab">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edtEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:maxLength="9"
                 android:fontFamily="@font/poppins_medium"
                 android:inputType="textEmailSubject"
-                android:textSize="@dimen/textnormal" />
+                android:maxLines="1"
+                android:paddingStart="30dp"
+                android:paddingEnd="40dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="12sp"
+                android:paddingLeft="30dp"
+                android:paddingRight="40dp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_input_layout_"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="@string/feedbcak"
+            app:boxCornerRadiusBottomEnd="50dp"
+            app:boxCornerRadiusBottomStart="50dp"
+            app:boxCornerRadiusTopEnd="50dp"
+            app:boxCornerRadiusTopStart="50dp"
+            app:errorEnabled="true"
+            app:helperTextEnabled="true"
+            app:helperTextTextColor="@color/colorPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_input_layout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtFeedack"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_medium"
+                android:inputType="textPersonName"
+                android:maxLength="9"
+                android:maxLines="1"
+                android:paddingStart="30dp"
+                android:paddingLeft="30dp"
+                android:paddingEnd="40dp"
+                android:paddingRight="40dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="12sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -88,30 +139,13 @@
             android:background="@color/colorPrimary"
             android:fontFamily="@font/poppins_medium"
             android:gravity="center"
-            android:text="Forgot Password"
+            android:text="Feedback"
             android:textColor="@color/white"
             android:textSize="@dimen/textnormallarge"
             android:onClick="@{(view)->onClick.onClick(view)}"
-            app:layout_constraintEnd_toEndOf="@+id/text_input_layout"
-            app:layout_constraintStart_toStartOf="@+id/text_input_layout"
-            app:layout_constraintTop_toBottomOf="@+id/text_input_layout" />
-
-        <TextView
-            android:id="@+id/textView9"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="43dp"
-            android:layout_marginEnd="24dp"
-            android:fontFamily="@font/poppins_bold"
-            android:gravity="center"
-            android:lineHeight="30dp"
-            android:text="We just need your registered Email id to sent you password reset instruction"
-            android:textColor="@color/black"
-            android:textSize="@dimen/textnormallarge"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tab" />
+            app:layout_constraintEnd_toEndOf="@+id/text_input_layout_"
+            app:layout_constraintStart_toStartOf="@+id/text_input_layout_"
+            app:layout_constraintTop_toBottomOf="@+id/text_input_layout_" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
