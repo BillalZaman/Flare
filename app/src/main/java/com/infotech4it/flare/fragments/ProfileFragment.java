@@ -47,11 +47,6 @@ public class ProfileFragment extends Fragment {
         data = new ArrayList<>();
         adapter.setData(data);
         binding.recyclerview.setAdapter(adapter);
-
-        binding.postConst.setOnClickListener(v->{
-            UIHelper.openActivity((Activity) getContext(), PostActivity.class);
-        });
-
         setNewsRecyclerview();
     }
 

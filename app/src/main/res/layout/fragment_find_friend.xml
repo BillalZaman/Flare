@@ -37,54 +37,148 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/tab_search"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_input_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:elevation="15dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:hint="Find new friends nearby your location"
+            android:visibility="gone"
+            app:boxCornerRadiusBottomEnd="50dp"
+            app:boxCornerRadiusBottomStart="50dp"
+            app:boxCornerRadiusTopEnd="50dp"
+            app:boxCornerRadiusTopStart="50dp"
+            app:errorEnabled="true"
+            app:helperTextEnabled="true"
+            app:helperTextTextColor="@color/colorPrimary"
+            app:layout_constraintEnd_toStartOf="@+id/imageView3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tab">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edtFindFriend"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:background="@drawable/rectangle"
-                android:ems="10"
-                android:fontFamily="@font/poppins_light"
-                android:gravity="center|start"
-                android:hint="Enter Your Friend Name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_medium"
                 android:inputType="textPersonName"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:textColor="@color/black"
-                android:textSize="@dimen/textfort"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:maxLength="9"
+                android:maxLines="1"
+                android:paddingStart="30dp"
+                android:paddingLeft="30dp"
+                android:paddingEnd="40dp"
+                android:paddingRight="40dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="12sp" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
+            android:visibility="gone"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tab_search"
+            app:layout_constraintTop_toBottomOf="@+id/text_input_layout"
             tools:itemCount="8"
             tools:listitem="@layout/item_list_find_friend" />
 
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/text_input_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/text_input_layout"
+            app:srcCompat="@drawable/ic_add_friend"
+            tools:visibility="gone" />
+
+        <HorizontalScrollView
+            android:id="@+id/nav_scroller"
+            android:layout_width="0dp"
+            android:scrollbars="none"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tab">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+
+                <TextView
+                    android:id="@+id/txtFriends"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:gravity="center"
+                    android:paddingStart="30dp"
+                    android:paddingEnd="30dp"
+                    android:text="Find Friends"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/textnormal"
+                    app:layout_constraintEnd_toStartOf="@+id/txtFindFriends"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/txtFindFriends"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:text="Friends"
+                    android:paddingStart="30dp"
+                    android:paddingEnd="30dp"
+                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:textSize="@dimen/textnormal"
+                    android:fontFamily="@font/poppins_medium"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/txtRequests"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/txtFriends"
+                    app:layout_constraintTop_toTopOf="@+id/txtFriends" />
+
+                <TextView
+                    android:id="@+id/txtRequests"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:text="Friend Request"
+                    android:paddingStart="30dp"
+                    android:paddingEnd="30dp"
+                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:textSize="@dimen/textnormal"
+                    android:fontFamily="@font/poppins_medium"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@+id/txtFindFriends"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/txtFindFriends"
+                    app:layout_constraintTop_toTopOf="@+id/txtFindFriends" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </HorizontalScrollView>
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="409dp"
+            android:layout_height="630dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/nav_scroller">
+
+        </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
