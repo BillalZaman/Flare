@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -20,6 +21,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.location.GeofencingClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,6 +30,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -39,8 +43,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
-public class MapActivity extends AppCompatActivity implements LocationProvider.LocationCallback, OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements LocationProvider.LocationCallback, OnMapReadyCallback ,
+        GoogleMap.OnMapLongClickListener {
+
     private ActivityMapBinding binding;
     private double mLatitude = 33.6160373;
     private double mLongitude = 72.9460223;
@@ -54,6 +61,9 @@ public class MapActivity extends AppCompatActivity implements LocationProvider.L
     private  String userAddress = "Islamabad, Pakistan";
     private TextView tvLat;
     private MarkerOptions markerOptions;
+
+    // GeoFencing
+    private GeofencingClient geofencingClient;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +138,9 @@ public class MapActivity extends AppCompatActivity implements LocationProvider.L
             return;
         }
         TrackUser(mLatitude,mLongitude,userAddress);
+
+        geofencingClient = LocationServices.getGeofencingClient(this);
+        mMap.setOnMapLongClickListener(MapActivity.this);
     }
 
     @Override
@@ -210,6 +223,27 @@ public class MapActivity extends AppCompatActivity implements LocationProvider.L
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
         }
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        addMarker(latLng);
+        addCircleGeoFence(latLng,200);
+    }
+
+    private void AddMarketGeoFence(LatLng latLng){
+        MarkerOptions markerOptions = new MarkerOptions().position(latLng);
+        mMap.addMarker(markerOptions);
+    }
+
+    private void addCircleGeoFence(LatLng latLng, float radius){
+        CircleOptions circleOptions = new CircleOptions();
+        circleOptions.center(latLng);
+        circleOptions.radius(radius);
+        circleOptions.strokeColor(Color.argb(225,225,0,0));
+        circleOptions.fillColor(Color.argb(64, 225, 0,0));
+        circleOptions.strokeWidth(4);
+        mMap.addCircle(circleOptions);
     }
 
     @SuppressLint("StaticFieldLeak")

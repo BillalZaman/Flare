@@ -10,14 +10,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".views.activities.UserFriendListActivity">
+        tools:context=".fragments.UserFriendListFragment">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/tab"
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:background="@color/colorPrimary"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">

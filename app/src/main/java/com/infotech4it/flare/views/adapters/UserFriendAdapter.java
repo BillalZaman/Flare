@@ -13,8 +13,7 @@ import com.bumptech.glide.Glide;
 import com.infotech4it.flare.R;
 import com.infotech4it.flare.databinding.ItemListFriendlistBinding;
 import com.infotech4it.flare.helpers.UIHelper;
-import com.infotech4it.flare.views.activities.UserFriendListActivity;
-import com.infotech4it.flare.views.models.NewsFeedModel;
+import com.infotech4it.flare.fragments.UserFriendListFragment;
 import com.infotech4it.flare.views.models.UserFriendsModel;
 
 import java.util.ArrayList;
@@ -49,7 +48,7 @@ public class UserFriendAdapter extends RecyclerView.Adapter<UserFriendAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Glide.with(context).load(R.drawable.billal).into(holder.binding.imgFriendUser);
         holder.binding.imgFriendUser.setOnClickListener(v->{
-            UIHelper.openActivity((Activity) context, UserFriendListActivity.class);
+            UIHelper.openActivity((Activity) context, UserFriendListFragment.class);
         });
     }
 

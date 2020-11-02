@@ -47,7 +47,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/btnPost"
+                android:id="@+id/btnPostFinal"
                 android:layout_width="0dp"
                 android:layout_height="55dp"
                 android:text="Create Post"

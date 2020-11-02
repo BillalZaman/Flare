@@ -11,4 +11,5 @@
     <color name="unSelectedTextColor">#99ffffff</color>
     <color name="grey_light">#61000000</color>
     <color name="grey_vlight">#31000000</color>
+    <color name="light_color">#399F9E9E</color>
 </resources>

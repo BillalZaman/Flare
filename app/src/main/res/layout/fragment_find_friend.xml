@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="onClick"
+            type="com.infotech4it.flare.fragments.FindFriendFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,6 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:background="@color/colorPrimary"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -98,7 +101,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/text_input_layout"
             app:srcCompat="@drawable/ic_add_friend"
-            tools:visibility="gone" />
+            android:visibility="gone" />
 
         <HorizontalScrollView
             android:id="@+id/nav_scroller"
@@ -117,7 +120,7 @@
                 <TextView
                     android:id="@+id/txtFriends"
                     android:layout_width="wrap_content"
-                    android:layout_height="45dp"
+                    android:layout_height="50dp"
                     android:fontFamily="@font/poppins_medium"
                     android:gravity="center"
                     android:paddingStart="30dp"
@@ -126,6 +129,8 @@
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="@dimen/textnormal"
+                    android:background="@color/light_color"
+                    android:onClick="@{(view)->onClick.onClick(view)}"
                     app:layout_constraintEnd_toStartOf="@+id/txtFindFriends"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
@@ -134,15 +139,17 @@
                 <TextView
                     android:id="@+id/txtFindFriends"
                     android:layout_width="wrap_content"
-                    android:layout_height="45dp"
+                    android:layout_height="50dp"
                     android:text="Friends"
                     android:paddingStart="30dp"
                     android:paddingEnd="30dp"
                     android:textAlignment="center"
                     android:gravity="center"
                     android:textSize="@dimen/textnormal"
+                    android:onClick="@{(view)->onClick.onClick(view)}"
                     android:fontFamily="@font/poppins_medium"
                     android:textColor="@color/black"
+                    android:background="@color/grey_vlight"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/txtRequests"
                     app:layout_constraintHorizontal_bias="0.5"
@@ -152,13 +159,15 @@
                 <TextView
                     android:id="@+id/txtRequests"
                     android:layout_width="wrap_content"
-                    android:layout_height="45dp"
+                    android:layout_height="50dp"
                     android:text="Friend Request"
                     android:paddingStart="30dp"
                     android:paddingEnd="30dp"
                     android:textAlignment="center"
                     android:gravity="center"
                     android:textSize="@dimen/textnormal"
+                    android:background="@color/grey_vlight"
+                    android:onClick="@{(view)->onClick.onClick(view)}"
                     android:fontFamily="@font/poppins_medium"
                     android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="@+id/txtFindFriends"

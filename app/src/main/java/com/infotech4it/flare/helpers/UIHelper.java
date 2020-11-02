@@ -701,6 +701,12 @@ public class UIHelper {
         activity.startActivity(myIntent);
     }
 
+    public static void openActivityAndSendActivityName(Activity activity, Class<?> calledActivity, String activityName) {
+        Intent myIntent = new Intent(activity, calledActivity);
+        myIntent.putExtra("activityName",activityName);
+        activity.startActivity(myIntent);
+    }
+
     public static void openAndClearActivity(Activity activity, Class<?> calledActivity) {
         Intent myIntent = new Intent(activity, calledActivity);
         myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

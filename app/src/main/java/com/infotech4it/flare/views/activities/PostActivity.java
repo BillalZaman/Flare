@@ -15,6 +15,7 @@ import androidx.databinding.DataBindingUtil;
 import com.bumptech.glide.Glide;
 import com.infotech4it.flare.R;
 import com.infotech4it.flare.databinding.ActivityPostBinding;
+import com.infotech4it.flare.helpers.UIHelper;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -60,7 +61,11 @@ public class PostActivity extends AppCompatActivity {
                 break;
             }
             case R.id.btnPost: {
-
+                binding.filerConst.setVisibility(View.VISIBLE);
+                break;
+            }
+            case R.id.imgLocation:{
+                UIHelper.openActivityAndSendActivityName(this, MapActivity.class, "PostActivity");
                 break;
             }
         }
