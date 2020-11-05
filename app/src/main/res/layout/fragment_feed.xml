@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -42,27 +42,67 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerview"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/postConst"
-            tools:itemCount="8"
-            tools:listitem="@layout/item_list_newsfeed" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/postConst"
+            android:id="@+id/consSearch"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tab">
+
+            <EditText
+                android:id="@+id/edtFindFriend"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/rectangle"
+                android:ems="10"
+                android:fontFamily="@font/poppins_light"
+                android:gravity="center|start"
+                android:hint="Search Feed Here!"
+                android:inputType="textPersonName"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/textfort"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imgFilter"
+                app:layout_constraintStart_toEndOf="@+id/imgFriendPost"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imgFilter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                app:layout_constraintBottom_toBottomOf="@+id/edtFindFriend"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/edtFindFriend"
+                app:srcCompat="@drawable/ic_baseline_filter_list_24" />
+
+            <ImageView
+                android:id="@+id/imgFriendPost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_supervisor_account_24" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/postConst"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/consSearch">
 
             <TextView
                 android:id="@+id/textView8"
@@ -74,7 +114,7 @@
                 android:drawableEnd="@drawable/ic_baseline_add_circle_24"
                 android:fontFamily="@font/poppins_semibold"
                 android:gravity="center|start"
-                android:padding="@dimen/padd_10"
+                android:padding="4dp"
                 android:text="What's on your mind?"
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/textnormal"
@@ -82,6 +122,110 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="4dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/postConst"
+            tools:itemCount="8"
+            tools:listitem="@layout/item_list_newsfeed" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/consBg"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/grey_light"
+            android:onClick="@{null}"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/postConst"
+            app:layout_constraintStart_toStartOf="@+id/postConst"
+            app:layout_constraintTop_toBottomOf="@+id/tab">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constInnerPopup"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="50dp"
+                android:background="@color/white"
+                android:elevation="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:gravity="center"
+                    android:text="Filter your Search Accordingly"
+                    android:textColor="@color/red"
+                    android:textSize="@dimen/textlarge"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/txtEmerAlert"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:gravity="center|start"
+                    android:padding="10dp"
+                    android:text="Emergency Alert Post"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="@dimen/textnormallarge"
+                    app:layout_constraintEnd_toEndOf="@+id/textView9"
+                    app:layout_constraintStart_toStartOf="@+id/textView9"
+                    app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+                <TextView
+                    android:id="@+id/txtNormalAlert"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:gravity="center|start"
+                    android:padding="10dp"
+                    android:text="Normal Alert Post"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="@dimen/textnormallarge"
+                    app:layout_constraintEnd_toEndOf="@+id/txtEmerAlert"
+                    app:layout_constraintStart_toStartOf="@+id/txtEmerAlert"
+                    app:layout_constraintTop_toBottomOf="@+id/txtEmerAlert" />
+
+                <TextView
+                    android:id="@+id/txtHighAlert"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="24dp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:gravity="center|start"
+                    android:padding="10dp"
+                    android:text="High Alert Post"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="@dimen/textnormallarge"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/txtNormalAlert"
+                    app:layout_constraintStart_toStartOf="@+id/txtNormalAlert"
+                    app:layout_constraintTop_toBottomOf="@+id/txtNormalAlert" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

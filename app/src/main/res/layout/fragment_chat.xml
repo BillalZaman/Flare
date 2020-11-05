@@ -12,6 +12,42 @@
         android:layout_height="match_parent"
         tools:context=".fragments.ChatFragment">
 
+        <TextView
+            android:id="@+id/btnLocalFriends"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_medium"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="Local Friends"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:background="@drawable/rec"
+            android:textSize="@dimen/textnormal"
+            app:layout_constraintBottom_toBottomOf="@+id/btnFriends"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/view6"
+            app:layout_constraintTop_toTopOf="@+id/btnFriends" />
+
+        <TextView
+            android:id="@+id/btnFriends"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/poppins_medium"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="Friends"
+            android:background="@drawable/rec"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/textnormal"
+            app:layout_constraintEnd_toStartOf="@+id/view6"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tab_search" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/tab"
             android:layout_width="match_parent"
@@ -56,6 +92,8 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/rectangle"
+                android:drawableStart="@drawable/ic_baseline_search_24"
+                android:drawablePadding="4dp"
                 android:ems="10"
                 android:fontFamily="@font/poppins_light"
                 android:gravity="center|start"
@@ -76,13 +114,26 @@
             android:id="@+id/recyclerview"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginTop="8dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tab_search"
+            app:layout_constraintTop_toBottomOf="@+id/btnLocalFriends"
             tools:itemCount="8"
             tools:listitem="@layout/item_list_chat" />
+
+        <View
+            android:id="@+id/view6"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="@color/grey_light"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/btnFriends"
+            app:layout_constraintEnd_toStartOf="@+id/btnLocalFriends"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btnFriends"
+            app:layout_constraintTop_toBottomOf="@+id/tab_search" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

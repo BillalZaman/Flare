@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +31,8 @@ import static android.Manifest.permission.CAMERA;
 public class PostActivity extends AppCompatActivity {
     private ActivityPostBinding binding;
     private EasyImage easyImage;
+    private String[] filterName = {"Emergency", "Normal", "High Alert"};
+    private ArrayAdapter<CharSequence> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,15 @@ public class PostActivity extends AppCompatActivity {
                 .setFolderName("EasyImage sample")
                 .allowMultiple(false)
                 .build();
+
+
+        arrayAdapter = new ArrayAdapter<CharSequence>(
+                this, R.layout.custom_spinner_dropdown,
+                filterName);
+
+        arrayAdapter.setDropDownViewResource(R.layout.custom_spinner_dropdown);
+        binding.edtMode.setAdapter(arrayAdapter);
+//        binding.edtMode.setOnClickListener((View.OnClickListener) PostActivity.this);
     }
 
     public void onClick(View view) {
@@ -64,7 +76,7 @@ public class PostActivity extends AppCompatActivity {
                 binding.filerConst.setVisibility(View.VISIBLE);
                 break;
             }
-            case R.id.imgLocation:{
+            case R.id.imgLocation: {
                 UIHelper.openActivityAndSendActivityName(this, MapActivity.class, "PostActivity");
                 break;
             }

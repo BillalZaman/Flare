@@ -163,7 +163,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/parent"
                 android:layout_width="0dp"
-                android:layout_height="270dp"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 android:background="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -195,10 +195,10 @@
                     android:background="@color/colorPrimary"
                     android:fontFamily="@font/poppins_semibold"
                     android:gravity="center"
+                    android:onClick="@{(view)->onClick.onClick(view)}"
                     android:text="Create Post"
                     android:textAlignment="center"
                     android:textColor="@color/white"
-                    android:onClick="@{(view)->onClick.onClick(view)}"
                     android:textSize="@dimen/textnormal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -258,12 +258,47 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="16dp"
-                    android:padding="15dp"
                     android:onClick="@{(view)->onClick.onClick(view)}"
+                    android:padding="15dp"
                     app:layout_constraintBottom_toBottomOf="@+id/textviewset"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/textviewset"
                     app:srcCompat="@drawable/ic_baseline_location_on_24" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/spinnerFilter"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Select your Mode"
+                    app:boxCornerRadiusBottomEnd="50dp"
+                    app:boxCornerRadiusBottomStart="50dp"
+                    app:boxCornerRadiusTopEnd="50dp"
+                    app:boxCornerRadiusTopStart="50dp"
+                    app:helperTextEnabled="true"
+                    app:layout_constraintBottom_toTopOf="@+id/btnPostFinal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/locationSeekbar">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/edtMode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_medium"
+                        android:inputType="textAutoComplete"
+                        android:maxLines="1"
+                        android:paddingStart="30dp"
+                        android:paddingEnd="40dp"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="12sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

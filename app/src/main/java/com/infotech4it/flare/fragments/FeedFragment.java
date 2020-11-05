@@ -44,6 +44,14 @@ public class FeedFragment extends Fragment {
         binding.postConst.setOnClickListener(v->{
             UIHelper.openActivity((Activity) getContext(), PostActivity.class);
         });
+
+        binding.imgFilter.setOnClickListener(v->{
+            binding.postConst.setVisibility(View.VISIBLE);
+        });
+
+        binding.txtEmerAlert.setOnClickListener(v->{
+            binding.postConst.setVisibility(View.GONE);
+        });
     }
 
     private void setRecyclerview() {
