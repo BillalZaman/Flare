@@ -5,6 +5,9 @@
 
     <data>
         <variable
+            name="onUserModel"
+            type="com.infotech4it.flare.views.models.UserModel" />
+        <variable
             name="onClick"
             type="com.infotech4it.flare.views.activities.RegistrationActivity"/>
     </data>
@@ -95,8 +98,9 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_medium"
                         android:inputType="textPersonName"
-                        android:maxLength="9"
+                        
                         android:maxLines="1"
+                        android:text="@{onUserModel.name}"
                         android:paddingStart="30dp"
                         android:paddingLeft="30dp"
                         android:paddingEnd="40dp"
@@ -131,8 +135,9 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_medium"
                         android:inputType="textEmailAddress"
-                        android:maxLength="9"
+                        
                         android:maxLines="1"
+                        android:text="@{onUserModel.email}"
                         android:paddingStart="30dp"
                         android:paddingLeft="30dp"
                         android:paddingEnd="40dp"
@@ -168,8 +173,9 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_medium"
                         android:inputType="number"
-                        android:maxLength="9"
+                        
                         android:maxLines="1"
+                        android:text="@{onUserModel.number}"
                         android:paddingStart="30dp"
                         android:paddingLeft="30dp"
                         android:paddingEnd="40dp"
@@ -204,8 +210,9 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_medium"
                         android:inputType="textPassword"
-                        android:maxLength="9"
+                        
                         android:maxLines="1"
+                        android:text="@{onUserModel.password}"
                         android:paddingStart="30dp"
                         android:paddingLeft="30dp"
                         android:paddingEnd="40dp"
@@ -240,8 +247,9 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_medium"
                         android:inputType="textPassword"
-                        android:maxLength="9"
+                        
                         android:maxLines="1"
+                        android:text="@{onUserModel.confirmPassword}"
                         android:paddingStart="30dp"
                         android:paddingLeft="30dp"
                         android:paddingEnd="40dp"

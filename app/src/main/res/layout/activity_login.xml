@@ -83,9 +83,9 @@
                 android:id="@+id/edtMobilePasswordText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLength="9"
+             
                 android:fontFamily="@font/poppins_medium"
-                android:inputType="number"
+                android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:paddingStart="30dp"
                 android:paddingEnd="40dp"
@@ -121,7 +121,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_medium"
                 android:inputType="number"
-                android:maxLength="9"
+             
                 android:maxLines="1"
                 android:paddingStart="30dp"
                 android:paddingLeft="30dp"

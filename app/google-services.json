@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "577259655301",
+    "firebase_url": "https://flare-3f53b.firebaseio.com",
+    "project_id": "flare-3f53b",
+    "storage_bucket": "flare-3f53b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:577259655301:android:ba087611bb14a7ea9799ec",
+        "android_client_info": {
+          "package_name": "com.infotech4it.flare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "577259655301-bkpo6c8iljd47lph6fjr8p04omcpptdr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzvhSswMtCXO62cRdwXRssMtVo4638PTw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "577259655301-bkpo6c8iljd47lph6fjr8p04omcpptdr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

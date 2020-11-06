@@ -40,6 +40,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.infotech4it.flare.constant.Constant;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -703,7 +705,7 @@ public class UIHelper {
 
     public static void openActivityAndSendActivityName(Activity activity, Class<?> calledActivity, String activityName) {
         Intent myIntent = new Intent(activity, calledActivity);
-        myIntent.putExtra("activityName",activityName);
+        myIntent.putExtra(Constant.CLASS_NAME,activityName);
         activity.startActivity(myIntent);
     }
 

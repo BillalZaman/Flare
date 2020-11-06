@@ -17,7 +17,6 @@
         android:theme="@style/AppTheme">
         <activity android:name=".views.activities.MapActivity"/>
         <activity android:name=".views.activities.CommentingActivity" />
-        <activity android:name=".fragments.UserFriendListFragment" />
         <activity android:name=".views.activities.ChatDetailActivity" />
         <activity android:name=".views.activities.PostActivity" />
         <activity android:name=".views.activities.FeedbackActivity" />

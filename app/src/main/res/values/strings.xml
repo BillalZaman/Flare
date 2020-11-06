@@ -47,5 +47,6 @@
     <string name="chat">Chat</string>
     <string name="more">More</string>
     <string name="feedbcak">Enter your message</string>
+    <string name="internet">Please Connect to the internet</string>
 
 </resources>
