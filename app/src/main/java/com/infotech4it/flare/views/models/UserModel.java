@@ -10,15 +10,19 @@ public class UserModel {
     private String number;
     private String password;
     private String confirmPassword;
+    private double latitude;
+    private double longitude;
 
     public UserModel() {
     }
 
-    public UserModel(String name, String email, String number, String password) {
+    public UserModel(String name, String email, String number, String password, double _latitude, double _longitude) {
         this.name = name;
         this.email = email;
         this.number = number;
         this.password = password;
+        this.latitude = _latitude;
+        this.longitude = _longitude;
     }
 
     public String getId() {
@@ -67,5 +71,21 @@ public class UserModel {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

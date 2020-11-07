@@ -1,5 +1,6 @@
 package com.infotech4it.flare.views.activities;
 
+import android.Manifest;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -14,7 +15,11 @@ import com.infotech4it.flare.databinding.ActivityLoginBinding;
 import com.infotech4it.flare.helpers.LoaderDialog;
 import com.infotech4it.flare.helpers.UIHelper;
 
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
 public class LoginActivity extends AppCompatActivity {
+    private final int REQUEST_LOCATION_PERMISSION = 1;
     private ActivityLoginBinding binding;
     private FirebaseAuth firebaseAuth;
     private LoaderDialog loaderDialog;
@@ -33,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
             UIHelper.openActivity(LoginActivity.this, HomeActivity.class);
         }
         loaderDialog = new LoaderDialog(this);
+        requestLocationPermission();
     }
 
     public void onClick(View view) {
@@ -52,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
                 break;
             }
             case R.id.txtForgotPassword: {
-                UIHelper.openActivityAndSendActivityName(this, ChangePasswordActivity.class,"login");
+                UIHelper.openActivityAndSendActivityName(this, ChangePasswordActivity.class, "login");
                 break;
             }
             case R.id.txtRegister: {
@@ -89,5 +95,23 @@ public class LoginActivity extends AppCompatActivity {
             check = false;
         }
         return check;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
+    public void requestLocationPermission() {
+        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION};
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            Toast.makeText(this, "Permission already granted", Toast.LENGTH_SHORT).show();
+        } else {
+            EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
+        }
     }
 }

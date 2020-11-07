@@ -49,4 +49,8 @@
     <string name="feedbcak">Enter your message</string>
     <string name="internet">Please Connect to the internet</string>
 
+    <string name="gps_enable_text">To proceed forward to services kindly turn on your GPS</string>
+    <string name="ok">OK</string>
+    <string name="alert">Alert !</string>
+
 </resources>
