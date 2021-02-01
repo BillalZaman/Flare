@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.infotech4it.flare">
 
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -17,36 +17,45 @@
         android:roundIcon="@mipmap/ic_launcher_circle"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".views.activities.MapActivity"
-            android:windowSoftInputMode="adjustNothing"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".views.activities.CommentingActivity"
-            android:windowSoftInputMode="adjustNothing"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".views.activities.ChatDetailActivity"
-            android:windowSoftInputMode="adjustNothing"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".views.activities.PostActivity"
-            android:windowSoftInputMode="adjustNothing"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".views.activities.FeedbackActivity"
-            android:windowSoftInputMode="adjustNothing"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".views.activities.ChangePasswordActivity"
-            android:windowSoftInputMode="adjustNothing"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".views.activities.HomeActivity"
-            android:windowSoftInputMode="adjustNothing"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".views.activities.RegistrationActivity"
-            android:windowSoftInputMode="adjustNothing"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".views.activities.AuthCheckActivity"
-            android:windowSoftInputMode="adjustNothing"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".views.activities.LoginActivity"
-            android:windowSoftInputMode="adjustNothing"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".views.activities.MapActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".views.activities.CommentingActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".views.activities.ChatDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".views.activities.PostActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".views.activities.FeedbackActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".views.activities.ChangePasswordActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".views.activities.HomeActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".views.activities.RegistrationActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".views.activities.AuthCheckActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".views.activities.LoginActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
         <activity android:name=".views.activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -58,6 +67,7 @@
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

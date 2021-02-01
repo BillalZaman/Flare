@@ -12,6 +12,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,19 +33,23 @@ import com.infotech4it.flare.helpers.LoaderDialog;
 import com.infotech4it.flare.helpers.UIHelper;
 import com.infotech4it.flare.views.models.UserModel;
 
-public class RegistrationActivity extends AppCompatActivity implements LocationListener {
-    private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 8088;
-    protected LocationManager locationManager;
-    protected LocationListener locationListener;
+public class RegistrationActivity extends AppCompatActivity {
+//        implements LocationListener {
+//    private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 8088;
+//    protected LocationManager locationManager;
+//    protected LocationListener locationListener;
     private ActivityRegistrationBinding binding;
-    private UserModel userModel;
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference;
-    private FirebaseAuth firebaseAuth;
-    private LoaderDialog loaderDialog;
-    private LocationProvider locationProvider;
-    private double latitude, langitude;
-    private boolean mLocationPermissionGranted;
+//    private UserModel userModel;
+//    private FirebaseDatabase firebaseDatabase;
+//    private DatabaseReference databaseReference;
+//    private FirebaseAuth firebaseAuth;
+//    private LoaderDialog loaderDialog;
+//    private LocationProvider locationProvider;
+//    private double latitude, langitude;
+//    private boolean mLocationPermissionGranted;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference databaseReference = database.getReference("user_table");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,26 +60,26 @@ public class RegistrationActivity extends AppCompatActivity implements LocationL
 
     private void init() {
         binding.setOnClick(this);
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        firebaseAuth = FirebaseAuth.getInstance();
-        databaseReference = firebaseDatabase.getReference("User");
-        binding.setOnUserModel(userModel);
-        userModel = new UserModel();
+//        firebaseDatabase = FirebaseDatabase.getInstance();
+//        firebaseAuth = FirebaseAuth.getInstance();
+//        databaseReference = firebaseDatabase.getReference("User");
+//        binding.setOnUserModel(userModel);
+//        userModel = new UserModel();
+//
+//        loaderDialog = new LoaderDialog(this);
 
-        loaderDialog = new LoaderDialog(this);
-
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+//        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            // TODO: Consider calling
+//            //    ActivityCompat#requestPermissions
+//            // here to request the missing permissions, and then overriding
+//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//            //                                          int[] grantResults)
+//            // to handle the case where the user grants the permission. See the documentation
+//            // for ActivityCompat#requestPermissions for more details.
+//            return;
+//        }
+//        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 //        if (checkLocationPermission()) {
 //            locationProvider = new LocationProvider(MapActivity.this, MapActivity.this);
 //            locationProvider.connect();
@@ -101,31 +106,53 @@ public class RegistrationActivity extends AppCompatActivity implements LocationL
     }
 
     public void registerUser() {
-        firebaseAuth.createUserWithEmailAndPassword(binding.edtEmail.getText().toString(),
-                binding.edtPassword.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    Handler handler = new Handler();
-                    handler.postDelayed(() -> {
-                        SaveDataToDb();
-//                        UIHelper.openActivity(RegistrationActivity.this, HomeActivity.class);
-                        UIHelper.showLongToastInCenter(RegistrationActivity.this, "" + task.getException().getMessage());
-                    }, 3000);
-                } else {
-                    loaderDialog.dismiss();
-                    UIHelper.showLongToastInCenter(RegistrationActivity.this, "" + task.getException().getMessage());
-                }
-            }
-        });
+        //create user
+        mAuth.createUserWithEmailAndPassword(binding.edtEmail.getText().toString(),
+                binding.edtPassword.getText().toString())
+                .addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (!task.isSuccessful()) {
+//                            loaderDialog.dismiss();
+                        } else {
+                            String firebaseID = task.getResult().getUser().getUid();
+                            databaseReference.child(firebaseID).child("firebaseID").setValue(firebaseID);
+                            databaseReference.child(firebaseID).child("name").setValue(binding.edtName.getText().toString());
+                            databaseReference.child(firebaseID).child("email").setValue(binding.edtEmail.getText().toString());
+                            databaseReference.child(firebaseID).child("number").setValue(binding.edtNumber.getText().toString());
+                            databaseReference.child(firebaseID).child("password").setValue(binding.edtPassword.getText().toString());
+                            databaseReference.child(firebaseID).child("profile").setValue("null");
+                            mAuth.getCurrentUser().sendEmailVerification();
+                            finish();
+                        }
+                    }
+                });
+
+//        firebaseAuth.createUserWithEmailAndPassword(binding.edtEmail.getText().toString(),
+//                binding.edtPassword.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//            @Override
+//            public void onComplete(@NonNull Task<AuthResult> task) {
+//                if (task.isSuccessful()) {
+//                    Handler handler = new Handler();
+//                    handler.postDelayed(() -> {
+//                        SaveDataToDb();
+////                        UIHelper.openActivity(RegistrationActivity.this, HomeActivity.class);
+//                        UIHelper.showLongToastInCenter(RegistrationActivity.this, "" + task.getException().getMessage());
+//                    }, 3000);
+//                } else {
+//                    loaderDialog.dismiss();
+//                    UIHelper.showLongToastInCenter(RegistrationActivity.this, "" + task.getException().getMessage());
+//                }
+//            }
+//        });
     }
 
 
-    private void SaveDataToDb() {
-        userModel = new UserModel(binding.edtName.getText().toString(), binding.edtEmail.getText().toString(),
-                binding.edtNumber.getText().toString(), binding.edtPassword.getText().toString(), latitude,langitude);
-        databaseReference.child(FirebaseAuth.getInstance().getUid()).setValue(userModel);
-    }
+//    private void SaveDataToDb() {
+//        userModel = new UserModel(binding.edtName.getText().toString(), binding.edtEmail.getText().toString(),
+//                binding.edtNumber.getText().toString(), binding.edtPassword.getText().toString(), latitude,langitude);
+//        databaseReference.child(FirebaseAuth.getInstance().getUid()).setValue(userModel);
+//    }
 
     private boolean validation() {
         boolean check = true;
@@ -163,11 +190,11 @@ public class RegistrationActivity extends AppCompatActivity implements LocationL
         return check;
     }
 
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-        latitude = location.getLatitude();
-        langitude = location.getLongitude();
-    }
+//    @Override
+//    public void onLocationChanged(@NonNull Location location) {
+//        latitude = location.getLatitude();
+//        langitude = location.getLongitude();
+//    }
 
 //    private boolean checkLocationPermission() {
 //        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&

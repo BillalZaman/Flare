@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.infotech4it.flare.helpers.CircleImageView
+            android:id="@+id/imgFriendUser"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/billal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txtUsername"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/poppins_medium"
+            android:gravity="center|start"
+            android:hint="Bilal"
+            android:textColor="@color/black"
+            android:textSize="@dimen/textnormal"
+            app:layout_constraintBottom_toBottomOf="@+id/imgFriendUser"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imgFriendUser"
+            app:layout_constraintTop_toTopOf="@+id/imgFriendUser"
+            app:layout_constraintVertical_bias="0.19" />
+
+        <TextView
+            android:id="@+id/txtUserlocation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_light"
+            android:gravity="center|start"
+            android:hint="DHA main bolevard opposite to rasheed hospital"
+            android:textColor="@color/black"
+            android:textSize="@dimen/textsmall"
+            app:layout_constraintEnd_toEndOf="@+id/txtUsername"
+            app:layout_constraintStart_toStartOf="@+id/txtUsername"
+            app:layout_constraintTop_toBottomOf="@+id/txtUsername" />
+
+        <View
+            android:id="@+id/view5"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/grey_vlight"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imgFriendUser" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

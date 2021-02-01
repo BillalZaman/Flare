@@ -57,7 +57,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             tools:itemCount="8"
-            tools:listitem="@layout/item_list_user_friend_list"
+            tools:listitem="@layout/selectuserforchat"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
