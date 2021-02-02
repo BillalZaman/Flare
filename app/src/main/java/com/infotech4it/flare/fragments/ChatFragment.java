@@ -28,7 +28,6 @@ import com.infotech4it.flare.helpers.AAppGlobal;
 import com.infotech4it.flare.helpers.FirebaseParser;
 import com.infotech4it.flare.helpers.RecyclerItemClickListener;
 import com.infotech4it.flare.views.activities.ChatDetailActivity;
-import com.infotech4it.flare.views.activities.MessageDetailActivity;
 import com.infotech4it.flare.views.adapters.ChatAdapter;
 import com.infotech4it.flare.views.adapters.MessageAdapter;
 import com.infotech4it.flare.views.models.ChatFragmentModel;

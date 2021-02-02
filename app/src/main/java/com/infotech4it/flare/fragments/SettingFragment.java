@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.infotech4it.flare.R;
 import com.infotech4it.flare.databinding.FragmentSettingBinding;
 import com.infotech4it.flare.helpers.UIHelper;
@@ -17,10 +18,11 @@ import com.infotech4it.flare.views.models.MoreModel;
 
 import java.util.ArrayList;
 
-public class SettingFragment extends Fragment {
+public class SettingFragment extends Fragment implements MoreInterface{
     private FragmentSettingBinding binding;
     private ArrayList<MoreModel> data;
     private MoreAdapter adapter;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();;
 
     public SettingFragment() {
         // Required empty public constructor
@@ -50,5 +52,33 @@ public class SettingFragment extends Fragment {
         data.add(new MoreModel("Privacy Policies", R.drawable.ic_privacypolicy));
         adapter.setData(data);
         binding.recyclerview.setAdapter(adapter);
+    }
+
+    @Override
+    public void onMoreClick(int position) {
+        switch (position){
+            case 0:{
+                break;
+            }
+            case 1:{
+                break;
+            }
+            case 2:{
+                FirebaseAuth.getInstance().signOut();
+                break;
+            }
+            case 3:{
+                break;
+            }
+            case 4:{
+                break;
+            }
+            case 5:{
+                break;
+            }
+            case 6:{
+                break;
+            }
+        }
     }
 }

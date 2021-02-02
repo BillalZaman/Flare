@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void init() {
-        binding.setOnClick(this);
+        binding.setOnClickLogin(this);
 //        firebaseAuth = FirebaseAuth.getInstance();
 //        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
 //            UIHelper.openActivity(LoginActivity.this, HomeActivity.class);
@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
 //        requestLocationPermission();
     }
 
-    public void onClick(View view) {
+    public void onClickLogin(View view) {
         switch (view.getId()) {
             case R.id.imgBack: {
                 finish();
