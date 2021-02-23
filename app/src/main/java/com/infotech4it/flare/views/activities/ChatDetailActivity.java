@@ -74,6 +74,8 @@ public class ChatDetailActivity extends AppCompatActivity {
 //            mUserId = "YJpHUxOULZNRMmTdZZUGuNRMNiD3";
             mPhotoURL = messageModelClass.getProfile();
             mUserName = messageModelClass.getTvName();
+            binding.textView.setText(mUserName);
+            mAdapter.setData(messageModelClass, true);
         } else {
             getUserData();
             if(mUserId!=null) {
@@ -145,6 +147,8 @@ public class ChatDetailActivity extends AppCompatActivity {
         mUserEmail = getIntent().getExtras().getString("mUserEmail");
         mPhotoURL = getIntent().getExtras().getString("mPhotoURL");
 
+        binding.textView.setText(mUserName);
+        mAdapter.setNameandProfile(mUserName, mPhotoURL, false);
     }
 
     @Override
@@ -199,29 +203,53 @@ public class ChatDetailActivity extends AppCompatActivity {
             chatId += "_";
 
 
-            referenceSender = databaseReferenceUserTable.child(currentUserId).child("chats").
-                    child(chatId);
+            referenceSender = databaseReferenceUserTable.child(String.valueOf(currentUserId)).child("chats").
+                    child(String.valueOf(chatId));
+
+
             Map<String, Object> map = new HashMap<>();
-            map.put("u_id",mUserId);
-            map.put("chat_id",chatId);
+
+            map.put("u_id",String.valueOf(mUserId));
+            map.put("chat_id",String.valueOf(chatId));
             map.put("recent_message",String.valueOf(message));
             map.put("unread_message_count",0);
             map.put("time",sendMessageTime);
-            map.put("f_id",currentUserId);
+            map.put("f_id",String.valueOf(currentUserId));
+//            map.put(AAppGlobal.Companion.UserRoleId,AApplicationGlobal.readUserRoleId(context, "USERROLEID", 0));
+
             referenceSender.setValue(map);
+
+//            referenceSender.child(AAppGlobal.Companion.UId).setValue(Integer.parseInt(String.valueOf(mPlayerId)));
+//            referenceSender.child(AAppGlobal.Companion.ChatId).setValue(chatId);
+//            referenceSender.child(AAppGlobal.Companion.RecentMessage).setValue(message);
+//            referenceSender.child(AAppGlobal.Companion.UnreadMessageCount).setValue(0);
+//            referenceSender.child(AAppGlobal.Companion.time).setValue(sendMessageTime);
+//            referenceSender.child(AAppGlobal.Companion.FId).setValue(Integer.parseInt(String.valueOf(currentUserId)));
+//            referenceSender.child(AAppGlobal.Companion.UserRoleId).setValue(AApplicationGlobal.readUserRoleId(context, "USERROLEID", 0));
 
 
             Map<String, Object> mapp = new HashMap<>();
-            mapp.put("u_id",currentUserId);
+
+            mapp.put("u_id",String.valueOf(currentUserId));
             mapp.put("chat_id",chatId);
             mapp.put("recent_message",message);
             mapp.put("unread_message_count",unReadMessageCount);
             mapp.put("time",sendMessageTime);
-            mapp.put("f_id",currentUserId);
-            referenceReceiver = databaseReferenceUserTable.child(mUserId).child("chats")
-                    .child(chatId);
+            mapp.put("f_id",String.valueOf(currentUserId));
+//            mapp.put(AAppGlobal.Companion.UserRoleId,AApplicationGlobal.readUserRoleId(context, "USERROLEID", 0));
+
+            referenceReceiver = databaseReferenceUserTable.child(String.valueOf(mUserId)).child("chats")
+                    .child(String.valueOf(chatId));
 
             referenceReceiver.setValue(mapp);
+
+//            referenceReceiver.child(AAppGlobal.Companion.UId).setValue(Integer.parseInt(String.valueOf(currentUserId)));
+//            referenceReceiver.child(AAppGlobal.Companion.ChatId).setValue(chatId);
+//            referenceReceiver.child(AAppGlobal.Companion.RecentMessage).setValue(message);
+//            referenceReceiver.child(AAppGlobal.Companion.UnreadMessageCount).setValue(unReadMessageCount);
+//            referenceReceiver.child(AAppGlobal.Companion.time).setValue(sendMessageTime);
+//            referenceReceiver.child(AAppGlobal.Companion.FId).setValue(Integer.parseInt(String.valueOf(currentUserId)));
+//            referenceReceiver.child(AAppGlobal.Companion.UserRoleId).setValue(AApplicationGlobal.readUserRoleId(context, "USERROLEID", 0));
 
             unReadMessageCount += 1;
 
@@ -232,23 +260,25 @@ public class ChatDetailActivity extends AppCompatActivity {
 
         } else {
 
-            referenceSender = databaseReferenceUserTable.child(currentUserId).child("chats").child(String.valueOf(chatId));
-            referenceReceiver = databaseReferenceUserTable.child(mUserId).child("chats").child(String.valueOf(chatId));
+            referenceSender = databaseReferenceUserTable.child(String.valueOf(currentUserId)).child("chats").child(String.valueOf(chatId));
+            referenceReceiver = databaseReferenceUserTable.child(String.valueOf(mUserId)).child("chats").child(String.valueOf(chatId));
 
 
-            referenceSender.child("u_id").setValue(mUserId);
+            referenceSender.child("u_id").setValue(String.valueOf(mUserId));
             referenceSender.child("chat_id").setValue(chatId);
             referenceSender.child("recent_message").setValue(message);
             referenceSender.child("unread_message_count").setValue(0);
             referenceSender.child("time").setValue(sendMessageTime);
-            referenceSender.child("f_id").setValue(currentUserId);
+            referenceSender.child("f_id").setValue(String.valueOf(currentUserId));
+//            referenceSender.child(AAppGlobal.Companion.UserRoleId).setValue(AApplicationGlobal.readUserRoleId(context, "USERROLEID", 0));
 
-            referenceReceiver.child("u_id").setValue(currentUserId);
+            referenceReceiver.child("u_id").setValue(String.valueOf(currentUserId));
             referenceReceiver.child("chat_id").setValue(chatId);
             referenceReceiver.child("recent_message").setValue(message);
             referenceReceiver.child("unread_message_count").setValue(unReadMessageCount);
             referenceReceiver.child("time").setValue(sendMessageTime);
-            referenceReceiver.child("f_id").setValue(currentUserId);
+            referenceReceiver.child("f_id").setValue(String.valueOf(currentUserId));
+//            referenceReceiver.child(AAppGlobal.Companion.UserRoleId).setValue(AApplicationGlobal.readUserRoleId(context, "USERROLEID", 0));
 
             unReadMessageCount += 1;
 
@@ -257,7 +287,11 @@ public class ChatDetailActivity extends AppCompatActivity {
 
     private void loadChat() {
 
+//        mChats=new ArrayList<>();
+//        mAdapter.notifyDataSetChanged();
+
         DatabaseReference databaseReferenceChat = databaseReferenceOneToOneChat.child(chatId);
+
         databaseReferenceChat.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

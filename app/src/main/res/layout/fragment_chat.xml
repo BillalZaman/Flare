@@ -14,6 +14,7 @@
 
         <TextView
             android:id="@+id/btnLocalFriends"
+            android:visibility="gone"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_medium"
@@ -32,6 +33,7 @@
 
         <TextView
             android:id="@+id/btnFriends"
+            android:visibility="gone"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"

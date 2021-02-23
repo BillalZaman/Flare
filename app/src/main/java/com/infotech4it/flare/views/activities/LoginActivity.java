@@ -28,7 +28,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class LoginActivity extends AppCompatActivity {
     private final int REQUEST_LOCATION_PERMISSION = 1;
     private ActivityLoginBinding binding;
-//    private FirebaseAuth firebaseAuth;
+    //    private FirebaseAuth firebaseAuth;
     private LoaderDialog loaderDialog;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -65,16 +65,19 @@ public class LoginActivity extends AppCompatActivity {
                 break;
             }
             case R.id.btnLogin: {
-                if (UIHelper.isNetworkAvailable(this)) {
-                    if (validation()) {
-                        LoggedIn();
-                    }
-                } else {
-                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-//                    UIHelper.showLongToastInCenter(this, getString(R.string.internet));
+                if (validation()) {
+                    LoggedIn();
                 }
+//                if (UIHelper.isNetworkAvailable(this)) {
+//                    if (validation()) {
+//                        LoggedIn();
+//                    }
+//                } else {
+//                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                    startActivity(intent);
+////                    UIHelper.showLongToastInCenter(this, getString(R.string.internet));
+//                }
                 break;
             }
             case R.id.txtForgotPassword: {
@@ -89,6 +92,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void LoggedIn() {
+        loaderDialog.startLoadingDialog();
         //authenticate user
         mAuth.signInWithEmailAndPassword(binding.edtMobilePasswordText.getText().toString(),
                 binding.edtPassword.getText().toString())
@@ -99,16 +103,19 @@ public class LoginActivity extends AppCompatActivity {
                         if (!task.isSuccessful()) {
                             // there was an error
                             loaderDialog.dismiss();
-                            UIHelper.showLongToastInCenter(LoginActivity.this, "" + task.getException().getMessage());
+//                            UIHelper.showLongToastInCenter(LoginActivity.this, "" + task.getException().getMessage());
+                            Toast.makeText(LoginActivity.this, "There is no Record of this User. Please Sign Up", Toast.LENGTH_LONG).show();
                         } else {
 
                             if (mAuth.getCurrentUser().isEmailVerified()){
                                 String firebaseID = task.getResult().getUser().getUid();
                                 databaseReference.child(firebaseID).child("password").setValue(binding.edtPassword.getText().toString());
-//                                loaderDialog.dismiss();
-                                UIHelper.openActivity(LoginActivity.this, HomeActivity.class);
+                                loaderDialog.dismiss();
+                                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
                             }else {
-//                                loaderDialog.dismiss();
+                                loaderDialog.dismiss();
                                 Toast.makeText(LoginActivity.this, "Please verify your Email Address", Toast.LENGTH_LONG).show();
                             }
 

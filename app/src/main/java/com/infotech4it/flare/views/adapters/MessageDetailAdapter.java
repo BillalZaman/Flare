@@ -14,11 +14,14 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.infotech4it.flare.R;
 import com.infotech4it.flare.helpers.AAppGlobal;
 import com.infotech4it.flare.helpers.AppGlobal;
+import com.infotech4it.flare.helpers.AvatarGenerator;
 import com.infotech4it.flare.interfaces.ChatScreenMediaListener;
 import com.infotech4it.flare.views.models.MessageDetailClass;
+import com.infotech4it.flare.views.models.MessageModelClass;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -28,8 +31,11 @@ public class MessageDetailAdapter extends RecyclerView.Adapter {
 
     private List<MessageDetailClass> mDataSet;
     private ChatScreenMediaListener mediaListener;
-    private Context context;
+    private static Context context;
     private String currentUserId;
+    private static MessageModelClass messageModelClass;
+    private static String name, profile;
+    private static Boolean isModel;
 
 
     public MessageDetailAdapter(List<MessageDetailClass> dataSet, Context context, String CurrentID) {
@@ -160,13 +166,16 @@ public class MessageDetailAdapter extends RecyclerView.Adapter {
 
     public static class TypeRecieveViewHolder extends RecyclerView.ViewHolder {
 
-        TextView messageTxt,timeTxt;
+        TextView messageTxt,timeTxt, tvName;
+        ImageView imgProfile;
 
         public TypeRecieveViewHolder(View itemView) {
             super(itemView);
 
             timeTxt= itemView.findViewById(R.id.text_message_time);
             messageTxt = itemView.findViewById(R.id.text_message_body);
+            tvName = itemView.findViewById(R.id.text_message_name);
+            imgProfile = itemView.findViewById(R.id.image_message_profile);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 messageTxt.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
@@ -181,10 +190,86 @@ public class MessageDetailAdapter extends RecyclerView.Adapter {
 
             messageTxt.setVisibility(View.VISIBLE);
             timeTxt.setVisibility(View.VISIBLE);
+
+            if (isModel){
+
+                tvName.setText(messageModelClass.getTvName());
+
+                try {
+                    if(messageModelClass.getProfile()!=null
+                            && !messageModelClass.getProfile().trim().equals("")){
+
+                        Glide.with(imgProfile.getContext()).
+                                load(messageModelClass.getProfile()).
+                                error(AvatarGenerator.Companion.avatarImage(context, 200,
+                                        AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
+                                        messageModelClass.getTvName(),false))
+                                .placeholder(AvatarGenerator.Companion.avatarImage(context, 200,
+                                        AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
+                                        messageModelClass.getTvName(),false))
+                                .into(imgProfile);
+                    }
+                    else {
+                        Glide.with(imgProfile.getContext())
+                                .load(AvatarGenerator.Companion.avatarImage(context, 200,
+                                        AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
+                                        messageModelClass.getTvName(),false))
+                                .into(imgProfile);
+                    }
+                }catch (Exception e) {
+
+                }
+
+            }else {
+
+                tvName.setText(name);
+
+                try {
+                    if(profile!=null
+                            && !profile.trim().equals("")){
+
+                        Glide.with(imgProfile.getContext()).
+                                load(profile).
+                                error(AvatarGenerator.Companion.avatarImage(context, 200,
+                                        AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
+                                        name,false))
+                                .placeholder(AvatarGenerator.Companion.avatarImage(context, 200,
+                                        AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
+                                        name,false))
+                                .into(imgProfile);
+                    }
+                    else {
+                        Glide.with(imgProfile.getContext())
+                                .load(AvatarGenerator.Companion.avatarImage(context, 200,
+                                        AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
+                                        name,false))
+                                .into(imgProfile);
+                    }
+                }catch (Exception e) {
+
+                }
+
+            }
+
+
         }
 
 
     }
+
+    public void setData(MessageModelClass messageModelClass1, Boolean isModel1){
+        this.messageModelClass = messageModelClass1;
+        this.isModel = isModel1;
+        notifyDataSetChanged();
+    }
+
+    public void setNameandProfile(String name1, String profile1, Boolean isModel1){
+        this.name = name1;
+        this.profile = profile1;
+        this.isModel = isModel1;
+        notifyDataSetChanged();
+    }
+
 
     public void addNewView(MessageDetailClass chat){
 

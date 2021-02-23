@@ -123,6 +123,8 @@ public class RegistrationActivity extends AppCompatActivity {
                             databaseReference.child(firebaseID).child("password").setValue(binding.edtPassword.getText().toString());
                             databaseReference.child(firebaseID).child("profile").setValue("null");
                             mAuth.getCurrentUser().sendEmailVerification();
+                            Toast.makeText(RegistrationActivity.this, "Successfully Registered. Open your Email for verification", Toast.LENGTH_SHORT).show();
+
                             finish();
                         }
                     }

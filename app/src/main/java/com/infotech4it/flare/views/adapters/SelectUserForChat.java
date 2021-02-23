@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.infotech4it.flare.R;
+import com.infotech4it.flare.helpers.AvatarGenerator;
 import com.infotech4it.flare.views.models.SelectStudentForChat;
 
 import org.json.JSONObject;
@@ -65,13 +66,38 @@ public class SelectUserForChat extends RecyclerView.Adapter<SelectUserForChat.My
         SelectStudentForChat phoneModel = arrayList.get(position);
         //myHolder.imgpProfile.setImageResource(messageModelClass.getImgProfile());
         myHolder.tvMobile.setText(phoneModel.getName());
-        myHolder.tvBrand.setText("Brand Name : "+phoneModel.getEmail());
+        myHolder.tvBrand.setText("Email : "+phoneModel.getEmail());
 //        myHolder.tvPrice.setText("Price in Euro € : "+phoneModel.getApprox_price_EUR());
 
 //        Glide.with(myHolder.imgMobile.getContext())
 //                .load(phoneModel.getImg_url())
 //                .error(R.drawable.smartphone)
 //                .into(myHolder.imgMobile);
+
+        try {
+            if( arrayList.get(position).getProfile()!=null
+                    && !arrayList.get(position).getProfile().trim().equals("")){
+
+                Glide.with(myHolder.imgpProfile.getContext()).
+                        load(arrayList.get(position).getProfile()).
+                        error(AvatarGenerator.Companion.avatarImage(context, 200,
+                                AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
+                                phoneModel.getName(),false))
+                        .placeholder(AvatarGenerator.Companion.avatarImage(context, 200,
+                                AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
+                                phoneModel.getName(),false))
+                        .into(myHolder.imgpProfile);
+            }
+            else {
+                Glide.with(myHolder.imgpProfile.getContext())
+                        .load(AvatarGenerator.Companion.avatarImage(context, 200,
+                                AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
+                                phoneModel.getName(),false))
+                        .into(myHolder.imgpProfile);
+            }
+        }catch (Exception e) {
+
+        }
 
     }
 
@@ -90,12 +116,12 @@ public class SelectUserForChat extends RecyclerView.Adapter<SelectUserForChat.My
 
     public class MyHolder extends RecyclerView.ViewHolder {
 
-        ImageView imgMobile;
+        ImageView imgpProfile;
         TextView tvMobile, tvBrand, tvPrice;
 
         public MyHolder(View itemView) {
             super(itemView);
-            imgMobile = itemView.findViewById(R.id.imgFriendUser);
+            imgpProfile = itemView.findViewById(R.id.imgFriendUser);
             tvMobile = itemView.findViewById(R.id.txtUsername);
             tvBrand = itemView.findViewById(R.id.txtUserlocation);
 //            tvPrice = itemView.findViewById(R.id.mobileprice);

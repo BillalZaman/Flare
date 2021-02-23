@@ -8,11 +8,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -32,6 +38,7 @@ import com.infotech4it.flare.views.adapters.ChatAdapter;
 import com.infotech4it.flare.views.adapters.MessageAdapter;
 import com.infotech4it.flare.views.models.ChatFragmentModel;
 import com.infotech4it.flare.views.models.ChatModel;
+import com.infotech4it.flare.views.models.MessageDetailClass;
 import com.infotech4it.flare.views.models.MessageModelClass;
 import com.infotech4it.flare.views.models.SelectStudentForChat;
 
@@ -39,6 +46,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 
 public class ChatFragment extends Fragment {
@@ -57,6 +65,9 @@ public class ChatFragment extends Fragment {
     private ProgressDialog dialog;
     private boolean firstTime = true;
     MessageAdapter messageAdapter;
+    private static ChatFragment instance;
+    private String currentUserId;
+    private boolean fistTime = true;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -74,37 +85,19 @@ public class ChatFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        init();
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        databaseReferenceChat = databaseReferenceUserTable.child(uid).child("chats");
+        if (getActivity() != null) {
+            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        }
+        instance = this;
 
-        DatabaseReference databaseReferenceName = databaseReferenceUserTable.child(uid).child("name");
-        databaseReferenceName.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.e("JKJK",snapshot.toString());
-            }
+        setviews();
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("JKJK",error.toString());
-            }
-        });
 
-//        loadChat();
-    }
+        MessageDetailClass messageDetailClass = new MessageDetailClass();
+        messageDetailClass.setMessage_type(AAppGlobal.Companion.TYPE_SEND);
+        messageDetailClass.setMessage("abc");
+        messageDetailClass.setTime(String.valueOf(new Date().getTime()));
 
-    private void init() {
-//        chatAdapter = new ChatAdapter(getContext());
-//        data = new ArrayList<>();
-//        for(int i=0; i<= 20; i++) {
-//            data.add(new ChatModel("John Doe", ""+i+12, "See you Tomorrow then!",""));
-//        }
-//        chatAdapter.setData(data);
-//        binding.recyclerview.setAdapter(chatAdapter);
-
-        messageAdapter = new MessageAdapter(getContext(), arrayList);
-        binding.recyclerview.setAdapter(messageAdapter);
 
         binding.recyclerview.addOnItemTouchListener(new RecyclerItemClickListener(getContext(),
                 binding.recyclerview, new RecyclerItemClickListener.OnItemClickListener() {
@@ -128,57 +121,74 @@ public class ChatFragment extends Fragment {
             }
         }));
 
+        binding.edtFindFriend.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                messageAdapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        databaseReferenceChat = databaseReferenceUserTable.child(String.valueOf(currentUserId)).child("chats");
+
+        loadChat();
+
     }
 
-//    private void loadChat(){
+
+    public static ChatFragment getInstance() {
+
+        return instance;
+    }
+
+    public void setviews() {
+
+        arrayList = new ArrayList<>();
+//        arrayList.add(new MessageModelClass(R.mipmap.ic_launcher_round, "RobWarburton", "Hi How are you?", "4 min", "2"));
+//        arrayList.add(new MessageModelClass(R.mipmap.ic_launcher_round, "Oliver Jake", "How you feeling today?", "4 min", "0"));
+//        arrayList.add(new MessageModelClass(R.mipmap.ic_launcher_round, "Jack Connor", "Today i am not available for lesson", "4 min", "3"));
+//        arrayList.add(new MessageModelClass(R.mipmap.ic_launcher_round, "Harry Callum", "I am sick", "4 min", "0"));
+//        arrayList.add(new MessageModelClass(R.mipmap.ic_launcher_round, "Charlie Kyle", "We have a class today", "4 min", "0"));
 //
-//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("user_table");
-//        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                for (DataSnapshot requestSnapshot: dataSnapshot.getChildren()) {
-//                    ChatFragmentModel chatFragmentModel = requestSnapshot.getValue(ChatFragmentModel.class);
-//                    arrayListSecond.add(chatFragmentModel);
-//
-//                    DataSnapshot productsSnapshot = requestSnapshot.child("chats");
-//
-//                    for (DataSnapshot productSnapshot: productsSnapshot.getChildren()) {
-////                        System.out.println(productSnapshot.child("productName").getValue(String.class));
-//                        MessageModelClass messageModelClass = productSnapshot.getValue(MessageModelClass.class);
-//                        arrayList.add(messageModelClass);
-//                    }
-//                }
-//
-//                messageAdapter.update(arrayList);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                throw databaseError.toException(); // don't ignore errors
-//            }
-//        });
-//
-//    }
+//        arrayList.clear();
+
+        messageAdapter = new MessageAdapter(getContext(), arrayList);
+        binding.recyclerview.setAdapter(messageAdapter);
+
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        binding.recyclerview.setLayoutManager(layoutManager);
+
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(),
+                DividerItemDecoration.VERTICAL);
+
+//        itemDecoration.setDrawable(getContext().getResources().getDrawable(R.drawable.divider_line));
+
+        binding.recyclerview.addItemDecoration(itemDecoration);
+
+
+    }
 
     private void loadChat() {
-
-        dialog = new ProgressDialog(getContext());
-        dialog.setMessage("Loading...");
-        dialog.show();
 
 //        arrayList.clear();
 //        arrayListUserIds.clear();
 
-//        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-//        databaseReferenceChat = databaseReferenceUserTable.child(uid).child("chats");
 
         databaseReferenceChat.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                if (dialog.isShowing()) {
-                    dialog.dismiss();
-                }
                 //snapshot.toString();
 
                 if (arrayList.size() <= snapshot.getChildrenCount()) {
@@ -191,7 +201,7 @@ public class ChatFragment extends Fragment {
 
                 //added here for handling the case when the there is no data at first time
                 if(!iterable.iterator().hasNext()){
-                    firstTime =false;
+                    fistTime=false;
                     onChildEventListener();
                 }
 
@@ -222,8 +232,6 @@ public class ChatFragment extends Fragment {
 
                             getUserDetails();
                         }
-
-//                        getUserDetails();
 
                     } catch (Exception e) {
                         Log.e("Exception__", e.toString());
@@ -271,9 +279,9 @@ public class ChatFragment extends Fragment {
 
                         bubbleSort(arrayList, arrayListUserIds, messageAdapter);
 
-                        if (firstTime) {
+                        if (fistTime) {
 
-                            firstTime = false;
+                            fistTime = false;
 
 //                            onChildEventListener();
 
@@ -302,13 +310,12 @@ public class ChatFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        loadChat();
 //        arrayList.clear();
 //        arrayListUserIds.clear();
 //        messageAdapter.notifyDataSetChanged();
 
         //added here for handling the case when the there is no data at first time
-//        if(firstTime){
+//        if(fistTime){
 //
 //            loadChat();
 //        }
@@ -324,7 +331,7 @@ public class ChatFragment extends Fragment {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                JSONObject jsonObject= getJSON(snapshot);
+                JSONObject jsonObject=getJSON(snapshot);
 
                 MessageModelClass messageModelClass= FirebaseParser.INSTANCE.parseOneToOneChatParser(jsonObject);
 
@@ -476,7 +483,6 @@ public class ChatFragment extends Fragment {
 
     }
 
-
     public static JSONObject getJSON(DataSnapshot dataSnapshot) {
         Gson gson=new Gson();
         JSONObject jsonObject=null;
@@ -515,5 +521,6 @@ public class ChatFragment extends Fragment {
         messageAdapter.update(arrayList);
 
     }
+
 
 }
