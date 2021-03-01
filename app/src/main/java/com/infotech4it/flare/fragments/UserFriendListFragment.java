@@ -47,7 +47,6 @@ public class UserFriendListFragment extends Fragment {
     private int count=0;
     private String currentUserId;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    // Write a message to the database
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference databaseReferenceUserTable = database.getReference("user_table");
     Context mContext;
@@ -57,7 +56,6 @@ public class UserFriendListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_user_friend_list, container, false);
         return binding.getRoot();
     }
@@ -65,7 +63,6 @@ public class UserFriendListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        init();
         mContext=getContext();
         currentUserId = mAuth.getCurrentUser().getUid();
         progressDialog = new ProgressDialog(mContext);
@@ -81,8 +78,11 @@ public class UserFriendListFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                    SelectStudentForChat slct = ds.getValue(SelectStudentForChat.class);
-                    arrayList.add(slct);
+                    if (!ds.getKey().contains(currentUserId)){
+                        SelectStudentForChat slct = ds.getValue(SelectStudentForChat.class);
+                        arrayList.add(slct);
+                    }
+
                 }
 
                 if (progressDialog.isShowing()) {
@@ -97,38 +97,11 @@ public class UserFriendListFragment extends Fragment {
         };
         tripsRef.addListenerForSingleValueEvent(valueEventListener);
 
-//        databaseReferenceUserTable.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot snapshot) {
-//                arrayList.clear();
-//                for (DataSnapshot postSnapshot: snapshot.getChildren()) {
-//                    SelectStudentForChat SelectStudentForChat = postSnapshot.getValue(SelectStudentForChat.class);
-////                    SelectStudentForChat phoneWithKey=new SelectStudentForChat(postSnapshot.getKey(),postSnapshot.getValue(SelectStudentForChat.class));
-//                    arrayList.add(SelectStudentForChat);
-////                    arrayList.add(university);
-//                }
-//
-//
-//                mAdapter.update(arrayList);
-////                adapter.notifyDataSetChanged();
-//                if (progressDialog!=null){
-//                    progressDialog.dismiss();
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-////                System.out.println("The read failed: " + firebaseError.getMessage());
-//
-//            }
-//        });
-
         binding.recyclerview.addOnItemTouchListener(new RecyclerItemClickListener(getContext(),
                 binding.recyclerview, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
 
-//                Toast.makeText(getActivity(), "Khubaib", Toast.LENGTH_SHORT).show();
                 SelectStudentForChat selectUserForChat = arrayList.get(position);
                 String id = selectUserForChat.getFirebaseID();
                 String name = selectUserForChat.getName();
@@ -153,46 +126,21 @@ public class UserFriendListFragment extends Fragment {
 
     private void loadChat(JSONObject jsonObjectPlayer, String firebaseID, String Name, String Email, String Password, String Phone, String image) {
 
-//        arrayList.clear();
-//        arrayListUserIds.clear();
-
-//        if (isNotChat) {
-//            Intent intent = new Intent();
-//            intent.putExtra("selectedPlayers", jsonObjectPlayer.toString());
-//            setResult(RESULT_OK, intent);
-//            finish();
-//            return;
-//        }
-
         count= 0;
 
-
         DatabaseReference databaseReferenceChat=databaseReferenceUserTable.child(currentUserId).child("chats");
-
         databaseReferenceChat.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 Iterable<DataSnapshot> iterable=snapshot.getChildren();
-
                 if (snapshot.getChildrenCount()>0) {
-
                     while (iterable.iterator().hasNext()) {
-
                         DataSnapshot dataSnapshot = iterable.iterator().next();
-
-                        //dataSnapshot.getValue().toString();
-
                         try {
-                            //JSONObject jsonObject=new JSONObject(dataSnapshot.getValue().toString());
-
                             count += 1;
-
-
                             JSONObject jsonObject = getJSON(dataSnapshot);
-
                             MessageModelClass messageModelClass = FirebaseParser.INSTANCE.parseOneToOneChatParser(jsonObject);
-
                             String compare = String.valueOf(messageModelClass.getuId());
                             if (firebaseID.contains(compare)){
                                 String chat_id = messageModelClass.getChatId();
@@ -201,7 +149,6 @@ public class UserFriendListFragment extends Fragment {
                                 intent.putExtra("Name", Name);
                                 intent.putExtra("Email", Email);
                                 intent.putExtra("chatId", chat_id);
-//                    intent.putExtra("selectedPlayers", jsonObjectPlayer.toString());
                                 startActivity(intent);
 
                                 break;
@@ -211,18 +158,10 @@ public class UserFriendListFragment extends Fragment {
                                 intent.putExtra("firebaseID", firebaseID);
                                 intent.putExtra("Name", Name);
                                 intent.putExtra("Email", Email);
-//                    intent.putExtra("selectedPlayers", jsonObjectPlayer.toString());
                                 startActivity(intent);
                             }
 
-                            // jsonObjectPlayer.optInt("firbaseID") == messageModelClass.getuId()
                             if (firebaseID.contains(messageModelClass.getuId())) {
-
-//                                jsonObjectPlayer.put("chat_id", messageModelClass.getChatId());
-
-//                                Intent intent = new Intent(getContext(), MessageDetailActivity.class);
-//                                intent.putExtra("selectedPlayers", jsonObjectPlayer.toString());
-//                                startActivity(intent);
 
                                 Intent intent = new Intent(getContext(), ChatDetailActivity.class);
                                 intent.putExtra("firebaseID", firebaseID);
@@ -242,10 +181,6 @@ public class UserFriendListFragment extends Fragment {
                                     intent.putExtra("Name", Name);
                                     intent.putExtra("Email", Email);
 
-//                                    Intent intent = new Intent(getContext(), MessageDetailActivity.class);
-//                                    intent.putExtra("selectedPlayers", jsonObjectPlayer.toString());
-//                                    startActivity(intent);
-
                                 }
 
 
@@ -262,15 +197,9 @@ public class UserFriendListFragment extends Fragment {
                     intent.putExtra("firebaseID", firebaseID);
                     intent.putExtra("Name", Name);
                     intent.putExtra("Email", Email);
-//                    intent.putExtra("firebaseID", "YJpHUxOULZNRMmTdZZUGuNRMNiD3");
-//                    intent.putExtra("Name", "Ksk");
-//                    intent.putExtra("Email", "taztarar2@gmail.com");
-//                    intent.putExtra("selectedPlayers", jsonObjectPlayer.toString());
                     startActivity(intent);
 
                 }
-
-
 
             }
 
@@ -297,22 +226,4 @@ public class UserFriendListFragment extends Fragment {
         return jsonObject;
     }
 
-    //
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        binding = DataBindingUtil.setContentView(this, R.layout.fragment_user_friend_list);
-//
-//        init();
-//    }
-
-//    private void init() {
-//        data = new ArrayList<>();
-//        adapter = new UserFriendListAdapter(getContext());
-//        for (int i = 0; i <= 200; i++) {
-//            data.add(new UserFriendsModel("Bilal", "Lahore, Pakistan"));
-//        }
-//        adapter.setData(data);
-//        binding.recyclerview.setAdapter(adapter);
-//    }
 }

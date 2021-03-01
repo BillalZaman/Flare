@@ -23,8 +23,7 @@
             android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".views.activities.CommentingActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing" />
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.activities.ChatDetailActivity"
             android:screenOrientation="portrait" />
@@ -59,7 +58,6 @@
         <activity android:name=".views.activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

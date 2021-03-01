@@ -73,26 +73,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyHolder
 
         myHolder.tvpName.setText(messageModelClass.getTvName());
         myHolder.tvpMsg.setText(messageModelClass.getRecentMessage());
-
-
         myHolder.tvpTime.setText(AppGlobal.Companion.getTimeDateString(messageModelClass.getTvMsgTime(),context));
-
-//        if (messageModelClass.getTvMsgTime().contains(".")) {
-//           // myHolder.tvpTime.setText(AAppGlobal.Companion.getMessageSentTime(Long.parseLong(messageModelClass.getTvMsgTime().split("\\.")[0])));
-//
-//            myHolder.tvpTime.setText(AppGlobal.Companion.getTimeDateString(messageModelClass.getTvMsgTime().split("\\.")[0],context));
-//
-//
-//        }else {
-//         //   myHolder.tvpTime.setText(AAppGlobal.Companion.getMessageSentTime(Long.parseLong(messageModelClass.getTvMsgTime())));
-//            myHolder.tvpTime.setText(AppGlobal.Companion.getTimeDateString(messageModelClass.getTvMsgTime(),context));
-//        }
-
-        //   myHolder.tvpTime.setText(AAppGlobal.Companion.getMessageSentTime(Long.parseLong(messageModelClass.getTvMsgTime())));
         myHolder.tvpMsgCount.setText(messageModelClass.getTvMsgCount());
-
-        //changed this due to testflight
-
 
         try {
             if( arrayList.get(position).getProfile()!=null
@@ -119,11 +101,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyHolder
 
         }
 
-
-
-
-
-        // messageModelClass.getTvMsgCount().equals("0")
         if (messageModelClass.getTvMsgCount().equals("0")) {
             myHolder.tvpMsgCount.setVisibility(View.INVISIBLE);
             myHolder.tvpTime.setTextColor(context.getResources().getColor(R.color.black));
@@ -133,22 +110,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyHolder
             myHolder.tvpTime.setTextColor(context.getResources().getColor(R.color.black));
         }
 
-//        String badge = messageModelClass.getTvMsgCount().toString();
-//        for (int i=0; i<arrayList.size(); i++){
-//            if (arrayList.get(position).getTvMsgCount()== "0"){
-//                myHolder.tvpMsgCount.setVisibility(myHolder.tvpMsgCount.GONE);
-//
-//            }
-//            else {
-//                myHolder.tvpMsgCount.setVisibility(myHolder.tvpMsgCount.VISIBLE);
-//                myHolder.tvpTime.setTextColor(Color.parseColor("#00B096"));
-//            }
-//        }
     }
-
-
-
-
 
     @Override
     public int getItemCount() {

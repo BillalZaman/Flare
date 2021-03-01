@@ -5,21 +5,20 @@
     <data>
         <variable
             name="onModel"
-            type="com.infotech4it.flare.views.models.CommentingModel" />
+            type="com.infotech4it.flare.views.models.CommentModelClass" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.infotech4it.flare.helpers.CircleImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imgUser"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:src="@drawable/nature"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -33,7 +32,6 @@
             android:layout_marginEnd="8dp"
             android:fontFamily="@font/poppins_medium"
             android:hint="John Doe"
-            android:text="@{onModel.userName}"
             android:textColor="@color/black"
             android:textSize="@dimen/textfort"
             app:layout_constraintEnd_toEndOf="parent"
@@ -47,8 +45,6 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:fontFamily="@font/poppins_medium"
-            android:hint="Hello there please add me to your friend list. Why you not accepting my friend request"
-            android:text="@{onModel.userReply}"
             android:textColor="@color/black"
             android:textSize="@dimen/textsmall"
             app:layout_constraintEnd_toEndOf="parent"

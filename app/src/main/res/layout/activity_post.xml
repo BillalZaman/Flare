@@ -55,13 +55,12 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.infotech4it.flare.helpers.CircleImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imgUser"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:src="@drawable/nature"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tab" />
 
@@ -83,6 +82,7 @@
 
         <TextView
             android:id="@+id/txtLocation"
+            android:visibility="gone"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"

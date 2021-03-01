@@ -26,11 +26,10 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class LoginActivity extends AppCompatActivity {
-    private final int REQUEST_LOCATION_PERMISSION = 1;
+
     private ActivityLoginBinding binding;
-    //    private FirebaseAuth firebaseAuth;
     private LoaderDialog loaderDialog;
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = database.getReference("user_table");
 
@@ -43,19 +42,14 @@ public class LoginActivity extends AppCompatActivity {
 
     private void init() {
         binding.setOnClickLogin(this);
-//        firebaseAuth = FirebaseAuth.getInstance();
-//        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-//            UIHelper.openActivity(LoginActivity.this, HomeActivity.class);
-//        }
+        loaderDialog = new LoaderDialog(this);
         if (mAuth.getCurrentUser() != null) {
             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
-//            UIHelper.openActivity(LoginActivity.this, HomeActivity.class);
         }
-        loaderDialog = new LoaderDialog(this);
-//        requestLocationPermission();
+
     }
 
     public void onClickLogin(View view) {
@@ -68,16 +62,6 @@ public class LoginActivity extends AppCompatActivity {
                 if (validation()) {
                     LoggedIn();
                 }
-//                if (UIHelper.isNetworkAvailable(this)) {
-//                    if (validation()) {
-//                        LoggedIn();
-//                    }
-//                } else {
-//                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                    startActivity(intent);
-////                    UIHelper.showLongToastInCenter(this, getString(R.string.internet));
-//                }
                 break;
             }
             case R.id.txtForgotPassword: {
@@ -93,7 +77,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void LoggedIn() {
         loaderDialog.startLoadingDialog();
-        //authenticate user
         mAuth.signInWithEmailAndPassword(binding.edtMobilePasswordText.getText().toString(),
                 binding.edtPassword.getText().toString())
                 .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
@@ -101,10 +84,9 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
 
                         if (!task.isSuccessful()) {
-                            // there was an error
                             loaderDialog.dismiss();
-//                            UIHelper.showLongToastInCenter(LoginActivity.this, "" + task.getException().getMessage());
                             Toast.makeText(LoginActivity.this, "There is no Record of this User. Please Sign Up", Toast.LENGTH_LONG).show();
+
                         } else {
 
                             if (mAuth.getCurrentUser().isEmailVerified()){
@@ -112,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
                                 databaseReference.child(firebaseID).child("password").setValue(binding.edtPassword.getText().toString());
                                 loaderDialog.dismiss();
                                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
                             }else {
                                 loaderDialog.dismiss();
@@ -123,17 +105,6 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
 
-//        firebaseAuth.signInWithEmailAndPassword(binding.edtMobilePasswordText.getText().toString(),
-//                binding.edtPassword.getText().toString()).addOnCompleteListener(task -> {
-//            if (task.isSuccessful()) {
-//                Handler handler = new Handler();
-//                handler.postDelayed(() -> UIHelper.openActivity(LoginActivity.this, HomeActivity.class), 3000);
-//            } else {
-//                loaderDialog.dismiss();
-//                Toast.makeText(LoginActivity.this, "" + task.getException().getMessage(),
-//                        Toast.LENGTH_SHORT).show();
-//            }
-//        });
     }
 
     private boolean validation() {
@@ -151,21 +122,4 @@ public class LoginActivity extends AppCompatActivity {
         return check;
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        // Forward results to EasyPermissions
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
-    public void requestLocationPermission() {
-        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION};
-        if (EasyPermissions.hasPermissions(this, perms)) {
-            Toast.makeText(this, "Permission already granted", Toast.LENGTH_SHORT).show();
-        } else {
-            EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
-        }
-    }
 }

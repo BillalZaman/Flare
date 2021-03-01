@@ -12,6 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/grey_vlight"
         tools:context=".fragments.ProfileFragment">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -45,49 +46,104 @@
 
         <ImageView
             android:id="@+id/imgcover"
-            android:layout_width="0dp"
+            android:visibility="gone"
+            android:layout_width="match_parent"
             android:layout_height="150dp"
             android:adjustViewBounds="false"
             android:cropToPadding="false"
             android:scaleType="fitXY"
-            android:onClick="@{(view)->onClick.onClick(view)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tab" />
 
-        <com.infotech4it.flare.helpers.CircleImageView
-            android:id="@+id/imgUser"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:adjustViewBounds="false"
-            android:cropToPadding="false"
-            android:src="@drawable/billal"
-            android:onClick="@{(view)->onClick.onClick(view)}"
-            app:layout_constraintBottom_toBottomOf="parent"
+        <LinearLayout
+            android:id="@+id/adjust"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/unSelectTabColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tab"
-            app:layout_constraintVertical_bias="0.16000003" />
+            app:layout_constraintVertical_bias="0.16000003">
 
-        <TextView
-            android:id="@+id/txtUserName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/poppins_semibold"
-            android:gravity="center"
-            android:text="Bilal Zaman"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="@dimen/textnormallarge"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imgUser" />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imgUser"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:adjustViewBounds="false"
+                android:cropToPadding="false"
+                android:src="@drawable/nature"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"/>
+
+            <LinearLayout
+                android:id="@+id/profileinfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/adjust">
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtUserName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="16dp"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:gravity="center"
+                            android:text="Bilal Zaman"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/textnormallarge" />
+
+                        <TextView
+                            android:id="@+id/flareid"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="15sp"
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:layout_margin="2dp"/>
+
+                        <TextView
+                            android:id="@+id/flareemail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="15sp"
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:layout_margin="2dp"/>
+
+                        <TextView
+                            android:id="@+id/flarenumber"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="15sp"
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:layout_margin="2dp"/>
+
+                    </LinearLayout>
+                </ScrollView>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview"
+            android:visibility="gone"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -97,7 +153,7 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtUserName"
+            app:layout_constraintTop_toBottomOf="@+id/adjust"
             tools:listitem="@layout/item_list_friendlist">
 
         </androidx.recyclerview.widget.RecyclerView>
@@ -106,14 +162,13 @@
             android:id="@+id/recyclerview_user_post"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="5dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerview"
-            tools:itemCount="8"
-            tools:listitem="@layout/item_list_newsfeed" />
+            app:layout_constraintTop_toBottomOf="@+id/adjust"
+            tools:listitem="@layout/blog_list_item" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

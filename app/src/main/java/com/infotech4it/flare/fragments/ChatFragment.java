@@ -2,12 +2,14 @@ package com.infotech4it.flare.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,7 +35,9 @@ import com.infotech4it.flare.databinding.FragmentChatBinding;
 import com.infotech4it.flare.helpers.AAppGlobal;
 import com.infotech4it.flare.helpers.FirebaseParser;
 import com.infotech4it.flare.helpers.RecyclerItemClickListener;
+import com.infotech4it.flare.helpers.UIHelper;
 import com.infotech4it.flare.views.activities.ChatDetailActivity;
+import com.infotech4it.flare.views.activities.HomeActivity;
 import com.infotech4it.flare.views.adapters.ChatAdapter;
 import com.infotech4it.flare.views.adapters.MessageAdapter;
 import com.infotech4it.flare.views.models.ChatFragmentModel;
@@ -56,7 +60,6 @@ public class ChatFragment extends Fragment {
     private ArrayList<MessageModelClass> arrayList = new ArrayList<>();
     private ArrayList<ChatFragmentModel> arrayListSecond = new ArrayList<>();
     private ArrayList<String> arrayListUserIds = new ArrayList<>();
-    // Write a message to the database
     private FirebaseAuth mAuth= FirebaseAuth.getInstance();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference databaseReferenceUserTable = database.getReference("user_table");
@@ -76,7 +79,6 @@ public class ChatFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_chat, container, false);
         return binding.getRoot();
     }
@@ -92,21 +94,16 @@ public class ChatFragment extends Fragment {
 
         setviews();
 
-
         MessageDetailClass messageDetailClass = new MessageDetailClass();
         messageDetailClass.setMessage_type(AAppGlobal.Companion.TYPE_SEND);
         messageDetailClass.setMessage("abc");
         messageDetailClass.setTime(String.valueOf(new Date().getTime()));
 
-
         binding.recyclerview.addOnItemTouchListener(new RecyclerItemClickListener(getContext(),
                 binding.recyclerview, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-//                Intent intent = new Intent(getContext(), MessageDetailActivity.class);
-//                startActivity(intent);
                 String name = messageAdapter.arrayList.get(position).getTvName();
-//                Toast.makeText(getActivity(), name+"", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(), ChatDetailActivity.class);
                 intent.putExtra("messagePartner", name);
                 intent.putExtra("modal", messageAdapter.arrayList.get(position));
@@ -139,30 +136,25 @@ public class ChatFragment extends Fragment {
         });
 
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
         databaseReferenceChat = databaseReferenceUserTable.child(String.valueOf(currentUserId)).child("chats");
 
         loadChat();
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadChat();
+    }
 
     public static ChatFragment getInstance() {
-
         return instance;
     }
 
     public void setviews() {
 
         arrayList = new ArrayList<>();
-//        arrayList.add(new MessageModelClass(R.mipmap.ic_launcher_round, "RobWarburton", "Hi How are you?", "4 min", "2"));
-//        arrayList.add(new MessageModelClass(R.mipmap.ic_launcher_round, "Oliver Jake", "How you feeling today?", "4 min", "0"));
-//        arrayList.add(new MessageModelClass(R.mipmap.ic_launcher_round, "Jack Connor", "Today i am not available for lesson", "4 min", "3"));
-//        arrayList.add(new MessageModelClass(R.mipmap.ic_launcher_round, "Harry Callum", "I am sick", "4 min", "0"));
-//        arrayList.add(new MessageModelClass(R.mipmap.ic_launcher_round, "Charlie Kyle", "We have a class today", "4 min", "0"));
-//
-//        arrayList.clear();
-
         messageAdapter = new MessageAdapter(getContext(), arrayList);
         binding.recyclerview.setAdapter(messageAdapter);
 
@@ -172,56 +164,32 @@ public class ChatFragment extends Fragment {
         DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL);
 
-//        itemDecoration.setDrawable(getContext().getResources().getDrawable(R.drawable.divider_line));
-
         binding.recyclerview.addItemDecoration(itemDecoration);
-
 
     }
 
     private void loadChat() {
 
-//        arrayList.clear();
-//        arrayListUserIds.clear();
-
-
         databaseReferenceChat.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                //snapshot.toString();
 
                 if (arrayList.size() <= snapshot.getChildrenCount()) {
                     arrayList.clear();
                     arrayListUserIds.clear();
                 }
 
-
                 Iterable<DataSnapshot> iterable = snapshot.getChildren();
-
-                //added here for handling the case when the there is no data at first time
                 if(!iterable.iterator().hasNext()){
                     fistTime=false;
                     onChildEventListener();
                 }
 
                 while (iterable.iterator().hasNext()) {
-
                     DataSnapshot dataSnapshot = iterable.iterator().next();
-                    //dataSnapshot.getValue().toString();
-
                     try {
-                        //JSONObject jsonObject=new JSONObject(dataSnapshot.getValue().toString());
-
-
                         JSONObject jsonObject = getJSON(dataSnapshot);
-
                         MessageModelClass messageModelClass = FirebaseParser.INSTANCE.parseOneToOneChatParser(jsonObject);
-
-//                        if (arrayList.size()==snapshot.getChildrenCount()) {
-//                            arrayList.clear();
-//                            arrayListUserIds.clear();
-//                        }
 
                         if (messageModelClass.getTvMsgTime().length() > 0) {
                             arrayList.add(messageModelClass);
@@ -229,7 +197,6 @@ public class ChatFragment extends Fragment {
                         }
 
                         if (arrayList.size() == snapshot.getChildrenCount()) {
-
                             getUserDetails();
                         }
 
@@ -254,10 +221,7 @@ public class ChatFragment extends Fragment {
     private void getUserDetails() {
 
         for (int index = 0; index < arrayListUserIds.size(); index++) {
-
             DatabaseReference databaseReferenceUserDetails = databaseReferenceUserTable.child(String.valueOf(arrayListUserIds.get(index)));
-
-
             final int finalIndex = index;
             databaseReferenceUserDetails.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -280,18 +244,11 @@ public class ChatFragment extends Fragment {
                         bubbleSort(arrayList, arrayListUserIds, messageAdapter);
 
                         if (fistTime) {
-
                             fistTime = false;
-
 //                            onChildEventListener();
-
                         }
 
-
                     }
-
-
-
 
                 }
 
@@ -301,44 +258,18 @@ public class ChatFragment extends Fragment {
                 }
             });
 
-
         }
 
-
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-//        arrayList.clear();
-//        arrayListUserIds.clear();
-//        messageAdapter.notifyDataSetChanged();
-
-        //added here for handling the case when the there is no data at first time
-//        if(fistTime){
-//
-//            loadChat();
-//        }
-
-
-    }
-
 
     private void onChildEventListener() {
-
-
         listener = databaseReferenceChat.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
                 JSONObject jsonObject=getJSON(snapshot);
-
                 MessageModelClass messageModelClass= FirebaseParser.INSTANCE.parseOneToOneChatParser(jsonObject);
-
                 boolean isAlreadyInList=false;
-
                 for (int x = 0; x < arrayListUserIds.size(); x++) {
-
                     if (arrayListUserIds.get(x)==messageModelClass.getuId()) {
                         isAlreadyInList=true;
                         break;
@@ -346,7 +277,6 @@ public class ChatFragment extends Fragment {
                 }
 
                 if(!isAlreadyInList){
-                    //  arrayList.add(0,messageModelClass);
                     arrayListUserIds.add(0,messageModelClass.getuId());
                     getSingleUserDetail(0, messageModelClass.getuId(),true);
                 }
@@ -355,15 +285,10 @@ public class ChatFragment extends Fragment {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
                 JSONObject jsonObject = getJSON(snapshot);
-
                 MessageModelClass messageModelClass = FirebaseParser.INSTANCE.parseOneToOneChatParser(jsonObject);
-
                 int foundIndex = -1;
-
                 for (int x = 0; x < arrayList.size(); x++) {
-
                     if (arrayList.get(x).getChatId().equalsIgnoreCase(messageModelClass.getChatId())) {
                         foundIndex = x;
                         //getSingleUserDetail(x,arrayListUserIds.get(x));
@@ -372,15 +297,11 @@ public class ChatFragment extends Fragment {
                 }
 
                 if (foundIndex >= 0) {
-
                     String userId = arrayListUserIds.get(foundIndex);
-
                     arrayList.remove(foundIndex);
-
                     arrayListUserIds.remove(foundIndex);
                     arrayList.add(0, messageModelClass);
                     arrayListUserIds.add(0, userId);
-                    //messageAdapter.notifyDataSetChanged();
                     getSingleUserDetail(0, userId,false);
 
                 }
@@ -409,34 +330,22 @@ public class ChatFragment extends Fragment {
     private void getSingleUserDetail(int finalIndex, String currentUserId,boolean isChildAddedCalled) {
 
         DatabaseReference databaseReferenceUserDetails = databaseReferenceUserTable.child(String.valueOf(currentUserId));
-
         databaseReferenceUserDetails.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-
                 snapshot.toString();
                 Map<String, Object> map = (Map<String, Object>) snapshot.getValue();
-
                 if (map == null) {
                     return;
                 }
-
                 if(isChildAddedCalled){
-
                     JSONObject data= null;
                     try {
-
                         data = new JSONObject(map.get("chats").toString());
-
                         if(!data.keys().hasNext()) {
                             return;
                         }
-
-
-                        arrayList.add(finalIndex,FirebaseParser.INSTANCE.
-                                parseOneToOneChatParser(data.getJSONObject(data.keys().next())));
-
+                        arrayList.add(finalIndex,FirebaseParser.INSTANCE.parseOneToOneChatParser(data.getJSONObject(data.keys().next())));
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -451,14 +360,7 @@ public class ChatFragment extends Fragment {
                     arrayList.get(finalIndex).setProfile(String.valueOf(map.get("profile")));
 
                 messageAdapter.notifyItemInserted(finalIndex);
-                //  if (finalIndex ==arrayListUserIds.size()-1) {
-
                 bubbleSort(arrayList, arrayListUserIds, messageAdapter);
-
-
-
-
-                //   }
 
             }
 
@@ -480,7 +382,6 @@ public class ChatFragment extends Fragment {
             databaseReferenceChat.removeEventListener(listener);
         listener = null;
 
-
     }
 
     public static JSONObject getJSON(DataSnapshot dataSnapshot) {
@@ -499,20 +400,16 @@ public class ChatFragment extends Fragment {
     public static void bubbleSort(ArrayList<MessageModelClass> arrayList, ArrayList<String> arrayListUserIds,
                                   MessageAdapter messageAdapter) {
         int n = arrayList.size();
-        //  MessageModelClass messageModelClass = new MessageModelClass();
         String id = String.valueOf(0);
         for (int i = 0; i < n; i++) {
             for (int j = 1; j < (n - i); j++) {
                 if (Long.parseLong(arrayList.get(j - 1).getTvMsgTime()) < Long.parseLong(arrayList.get(j).getTvMsgTime())) {
-                    //swap elements
                     MessageModelClass  messageModelClass=new MessageModelClass( arrayList.get(j - 1));
                     id = arrayListUserIds.get(j - 1);
                     arrayList.set(j - 1, arrayList.get(j));
                     arrayListUserIds.set(j - 1, arrayListUserIds.get(j));
                     arrayList.set(j, messageModelClass);
                     arrayListUserIds.set(j, id);
-//                        arr[j-1] = arr[j];
-//                        arr[j] = temp;
                 }
 
             }

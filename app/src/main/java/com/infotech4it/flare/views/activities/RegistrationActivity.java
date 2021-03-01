@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -26,6 +27,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.UploadTask;
 import com.infotech4it.flare.R;
 import com.infotech4it.flare.databinding.ActivityRegistrationBinding;
 import com.infotech4it.flare.googleplayservices.LocationProvider;
@@ -33,23 +36,17 @@ import com.infotech4it.flare.helpers.LoaderDialog;
 import com.infotech4it.flare.helpers.UIHelper;
 import com.infotech4it.flare.views.models.UserModel;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class RegistrationActivity extends AppCompatActivity {
-//        implements LocationListener {
-//    private final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 8088;
-//    protected LocationManager locationManager;
-//    protected LocationListener locationListener;
+
     private ActivityRegistrationBinding binding;
-//    private UserModel userModel;
-//    private FirebaseDatabase firebaseDatabase;
-//    private DatabaseReference databaseReference;
-//    private FirebaseAuth firebaseAuth;
-//    private LoaderDialog loaderDialog;
-//    private LocationProvider locationProvider;
-//    private double latitude, langitude;
-//    private boolean mLocationPermissionGranted;
+    private LoaderDialog loaderDialog;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = database.getReference("user_table");
+    private FirebaseFirestore fireStore = FirebaseFirestore.getInstance();;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,30 +57,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private void init() {
         binding.setOnClick(this);
-//        firebaseDatabase = FirebaseDatabase.getInstance();
-//        firebaseAuth = FirebaseAuth.getInstance();
-//        databaseReference = firebaseDatabase.getReference("User");
-//        binding.setOnUserModel(userModel);
-//        userModel = new UserModel();
-//
-//        loaderDialog = new LoaderDialog(this);
-
-//        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            // TODO: Consider calling
-//            //    ActivityCompat#requestPermissions
-//            // here to request the missing permissions, and then overriding
-//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//            //                                          int[] grantResults)
-//            // to handle the case where the user grants the permission. See the documentation
-//            // for ActivityCompat#requestPermissions for more details.
-//            return;
-//        }
-//        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-//        if (checkLocationPermission()) {
-//            locationProvider = new LocationProvider(MapActivity.this, MapActivity.this);
-//            locationProvider.connect();
-//        }
+        loaderDialog = new LoaderDialog(this);
     }
 
     public void onClick(View view) {
@@ -106,14 +80,17 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     public void registerUser() {
-        //create user
+        loaderDialog.startLoadingDialog();
         mAuth.createUserWithEmailAndPassword(binding.edtEmail.getText().toString(),
                 binding.edtPassword.getText().toString())
                 .addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (!task.isSuccessful()) {
-//                            loaderDialog.dismiss();
+                            loaderDialog.dismiss();
+                            String errorMessage = task.getException().getMessage();
+                            Toast.makeText(RegistrationActivity.this, "Error : " + errorMessage, Toast.LENGTH_LONG).show();
+
                         } else {
                             String firebaseID = task.getResult().getUser().getUid();
                             databaseReference.child(firebaseID).child("firebaseID").setValue(firebaseID);
@@ -123,38 +100,12 @@ public class RegistrationActivity extends AppCompatActivity {
                             databaseReference.child(firebaseID).child("password").setValue(binding.edtPassword.getText().toString());
                             databaseReference.child(firebaseID).child("profile").setValue("null");
                             mAuth.getCurrentUser().sendEmailVerification();
-                            Toast.makeText(RegistrationActivity.this, "Successfully Registered. Open your Email for verification", Toast.LENGTH_SHORT).show();
-
-                            finish();
+                            saveToFirestore(binding.edtName.getText().toString(), firebaseID);
                         }
                     }
                 });
 
-//        firebaseAuth.createUserWithEmailAndPassword(binding.edtEmail.getText().toString(),
-//                binding.edtPassword.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//            @Override
-//            public void onComplete(@NonNull Task<AuthResult> task) {
-//                if (task.isSuccessful()) {
-//                    Handler handler = new Handler();
-//                    handler.postDelayed(() -> {
-//                        SaveDataToDb();
-////                        UIHelper.openActivity(RegistrationActivity.this, HomeActivity.class);
-//                        UIHelper.showLongToastInCenter(RegistrationActivity.this, "" + task.getException().getMessage());
-//                    }, 3000);
-//                } else {
-//                    loaderDialog.dismiss();
-//                    UIHelper.showLongToastInCenter(RegistrationActivity.this, "" + task.getException().getMessage());
-//                }
-//            }
-//        });
     }
-
-
-//    private void SaveDataToDb() {
-//        userModel = new UserModel(binding.edtName.getText().toString(), binding.edtEmail.getText().toString(),
-//                binding.edtNumber.getText().toString(), binding.edtPassword.getText().toString(), latitude,langitude);
-//        databaseReference.child(FirebaseAuth.getInstance().getUid()).setValue(userModel);
-//    }
 
     private boolean validation() {
         boolean check = true;
@@ -192,72 +143,26 @@ public class RegistrationActivity extends AppCompatActivity {
         return check;
     }
 
-//    @Override
-//    public void onLocationChanged(@NonNull Location location) {
-//        latitude = location.getLatitude();
-//        langitude = location.getLongitude();
-//    }
+    private void saveToFirestore(final String uName, final String user_id) {
+        Map<String,String> userMap= new HashMap<>();
+        userMap.put("name",uName);
+        userMap.put("image","null");
+        fireStore.collection("Users").document(user_id).set(userMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    loaderDialog.dismiss();
+                    Toast.makeText(RegistrationActivity.this, "Successfully Registered. Open your Email for verification", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                else {
+                    loaderDialog.dismiss();
+                    String error = task.getException().getMessage();
+                    Toast.makeText(RegistrationActivity.this, " FireStore Error" + error, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
-//    private boolean checkLocationPermission() {
-//        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-//                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-//    }
-//
-//    private void getLocationPermission() {
-//        /*
-//         * Request location permission, so that we can get the location of the
-//         * device. The result of the permission request is handled by a callback,
-//         * onRequestPermissionsResult.
-//         */
-//        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-//                android.Manifest.permission.ACCESS_FINE_LOCATION)
-//                == PackageManager.PERMISSION_GRANTED) {
-//            mLocationPermissionGranted = true;
-//
-//        } else {
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-//                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-//        }
-//
-//    }
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        mLocationPermissionGranted = false;
-//
-//        // If request is cancelled, the result arrays are empty.
-//        if (grantResults.length > 0
-//                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//            mLocationPermissionGranted = true;
-//            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-//                openLocationSettingActivity();
-//            } else {
-//                if (checkLocationPermission()) {
-//                    locationProvider = new LocationProvider(this, this);
-//                    locationProvider.connect();
-//                }
-//            }
-//        }
-//    }
-//
-//    private void openLocationSettingActivity() {
-//        new AlertDialog.Builder(this)
-//                .setCancelable(false)
-//                .setTitle(getResources().getString(R.string.alert))
-//                .setMessage(getResources().getString(R.string.gps_enable_text))
-//                .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        Intent callGPSSettingIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//                        startActivity(callGPSSettingIntent);
-//                    }
-//                })
-//                .show();
-//    }
-//
-//    @Override
-//    public void handleNewLocation(Location location) {
-//
-//    }
+    }
+
 }

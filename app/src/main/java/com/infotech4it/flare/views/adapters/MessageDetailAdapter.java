@@ -49,7 +49,6 @@ public class MessageDetailAdapter extends RecyclerView.Adapter {
     public RecyclerView.ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
 
         View view;
-
         switch (viewType) {
 
             case AAppGlobal.Companion.TYPE_SEND:
@@ -78,18 +77,14 @@ public class MessageDetailAdapter extends RecyclerView.Adapter {
 
         return viewType;
 
-
     }
 
     @Override
     public void onBindViewHolder(@NotNull RecyclerView.ViewHolder holder, int position) {
 
         MessageDetailClass chat = mDataSet.get(position);
-
         if (chat != null && chat.getSenderName().equals(currentUserId)) {
-
             switch (chat.getView_type()) {
-
                 case AAppGlobal.Companion.TEXT_TYPE:
 
                     ((TypeSendViewHolder) holder).showTypeText(chat);
@@ -97,38 +92,28 @@ public class MessageDetailAdapter extends RecyclerView.Adapter {
 
                     break;
 
-
             }
 
         }
         else {
 
             if (chat != null) {
-
                 switch (chat.getView_type()) {
-
                     case AAppGlobal.Companion.TEXT_TYPE:
 
                         ((TypeRecieveViewHolder) holder).showTypeText(chat);
                         ((TypeRecieveViewHolder) holder).timeTxt.setText(AppGlobal.Companion.getTimeDateString(chat.getTime(),context));
 
                         break;
-
-
-
-
                 }
 
-
             }
-
 
         }
 
     }
 
-    public void setOnItemClickListener(ChatScreenMediaListener mediaListener)
-    {
+    public void setOnItemClickListener(ChatScreenMediaListener mediaListener) {
         this.mediaListener = mediaListener;
     }
 
@@ -136,7 +121,6 @@ public class MessageDetailAdapter extends RecyclerView.Adapter {
     public int getItemCount() {
         return mDataSet.size();
     }
-
 
     public static class TypeSendViewHolder extends RecyclerView.ViewHolder {
 
@@ -181,20 +165,16 @@ public class MessageDetailAdapter extends RecyclerView.Adapter {
                 messageTxt.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
             }
 
-
         }
 
         public void showTypeText(MessageDetailClass chatObject){
 
             messageTxt.setText(chatObject.getMessage());
-
             messageTxt.setVisibility(View.VISIBLE);
             timeTxt.setVisibility(View.VISIBLE);
 
             if (isModel){
-
                 tvName.setText(messageModelClass.getTvName());
-
                 try {
                     if(messageModelClass.getProfile()!=null
                             && !messageModelClass.getProfile().trim().equals("")){
@@ -223,7 +203,6 @@ public class MessageDetailAdapter extends RecyclerView.Adapter {
             }else {
 
                 tvName.setText(name);
-
                 try {
                     if(profile!=null
                             && !profile.trim().equals("")){
@@ -248,12 +227,9 @@ public class MessageDetailAdapter extends RecyclerView.Adapter {
                 }catch (Exception e) {
 
                 }
-
             }
 
-
         }
-
 
     }
 

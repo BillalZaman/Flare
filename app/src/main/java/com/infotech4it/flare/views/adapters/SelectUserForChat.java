@@ -62,17 +62,9 @@ public class SelectUserForChat extends RecyclerView.Adapter<SelectUserForChat.My
     @Override
     public void onBindViewHolder(@NonNull MyHolder myHolder, int position) {
 
-//        SelectStudentForChat phoneModelKey = arrayList.get(position);
         SelectStudentForChat phoneModel = arrayList.get(position);
-        //myHolder.imgpProfile.setImageResource(messageModelClass.getImgProfile());
         myHolder.tvMobile.setText(phoneModel.getName());
         myHolder.tvBrand.setText("Email : "+phoneModel.getEmail());
-//        myHolder.tvPrice.setText("Price in Euro € : "+phoneModel.getApprox_price_EUR());
-
-//        Glide.with(myHolder.imgMobile.getContext())
-//                .load(phoneModel.getImg_url())
-//                .error(R.drawable.smartphone)
-//                .into(myHolder.imgMobile);
 
         try {
             if( arrayList.get(position).getProfile()!=null
@@ -124,7 +116,6 @@ public class SelectUserForChat extends RecyclerView.Adapter<SelectUserForChat.My
             imgpProfile = itemView.findViewById(R.id.imgFriendUser);
             tvMobile = itemView.findViewById(R.id.txtUsername);
             tvBrand = itemView.findViewById(R.id.txtUserlocation);
-//            tvPrice = itemView.findViewById(R.id.mobileprice);
 
             itemView.setTag(itemView);
 

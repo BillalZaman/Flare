@@ -4,7 +4,7 @@
         android:id="@+id/action_News"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_home_24"
-        android:title="@string/news_feed" />
+        android:title="@string/feeds" />
     <item
         android:id="@+id/action_Profile"
         android:enabled="true"
@@ -14,7 +14,7 @@
         android:id="@+id/action_Find_Friend"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_find_in_page_24"
-        android:title="@string/find_friend" />
+        android:title="@string/friends" />
     <item
         android:id="@+id/action_Chat"
         android:enabled="true"

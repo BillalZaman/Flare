@@ -71,7 +71,6 @@ public class ChatDetailActivity extends AppCompatActivity {
             messageModelClass = (MessageModelClass) getIntent().getSerializableExtra("modal");
             chatId = messageModelClass.getChatId();
             mUserId = String.valueOf(messageModelClass.getuId());
-//            mUserId = "YJpHUxOULZNRMmTdZZUGuNRMNiD3";
             mPhotoURL = messageModelClass.getProfile();
             mUserName = messageModelClass.getTvName();
             binding.textView.setText(mUserName);
@@ -85,7 +84,6 @@ public class ChatDetailActivity extends AppCompatActivity {
                             public void onDataChange(DataSnapshot dataSnapshot) {
 
                                 if (!dataSnapshot.exists()) {
-
                                     firebaseUserTableModal.setId(Integer.parseInt(mUserId));
                                     firebaseUserTableModal.setName(mUserName);
                                     firebaseUserTableModal.setProfile(mPhotoURL);
@@ -132,10 +130,6 @@ public class ChatDetailActivity extends AppCompatActivity {
             sendMessage();
         });
 
-
-    }
-
-    public void setViews(){
 
     }
 
@@ -191,10 +185,8 @@ public class ChatDetailActivity extends AppCompatActivity {
 
     private void updateFrontScreen(String message) {
 
-
         DatabaseReference referenceSender = null;
         DatabaseReference referenceReceiver = null;
-
 
         if (mChats.size() == 0) {
 
@@ -202,54 +194,28 @@ public class ChatDetailActivity extends AppCompatActivity {
             chatId += AAppGlobal.Companion.getUniTime();
             chatId += "_";
 
-
             referenceSender = databaseReferenceUserTable.child(String.valueOf(currentUserId)).child("chats").
                     child(String.valueOf(chatId));
 
-
             Map<String, Object> map = new HashMap<>();
-
             map.put("u_id",String.valueOf(mUserId));
             map.put("chat_id",String.valueOf(chatId));
             map.put("recent_message",String.valueOf(message));
             map.put("unread_message_count",0);
             map.put("time",sendMessageTime);
             map.put("f_id",String.valueOf(currentUserId));
-//            map.put(AAppGlobal.Companion.UserRoleId,AApplicationGlobal.readUserRoleId(context, "USERROLEID", 0));
-
             referenceSender.setValue(map);
 
-//            referenceSender.child(AAppGlobal.Companion.UId).setValue(Integer.parseInt(String.valueOf(mPlayerId)));
-//            referenceSender.child(AAppGlobal.Companion.ChatId).setValue(chatId);
-//            referenceSender.child(AAppGlobal.Companion.RecentMessage).setValue(message);
-//            referenceSender.child(AAppGlobal.Companion.UnreadMessageCount).setValue(0);
-//            referenceSender.child(AAppGlobal.Companion.time).setValue(sendMessageTime);
-//            referenceSender.child(AAppGlobal.Companion.FId).setValue(Integer.parseInt(String.valueOf(currentUserId)));
-//            referenceSender.child(AAppGlobal.Companion.UserRoleId).setValue(AApplicationGlobal.readUserRoleId(context, "USERROLEID", 0));
-
-
             Map<String, Object> mapp = new HashMap<>();
-
             mapp.put("u_id",String.valueOf(currentUserId));
             mapp.put("chat_id",chatId);
             mapp.put("recent_message",message);
             mapp.put("unread_message_count",unReadMessageCount);
             mapp.put("time",sendMessageTime);
             mapp.put("f_id",String.valueOf(currentUserId));
-//            mapp.put(AAppGlobal.Companion.UserRoleId,AApplicationGlobal.readUserRoleId(context, "USERROLEID", 0));
-
             referenceReceiver = databaseReferenceUserTable.child(String.valueOf(mUserId)).child("chats")
                     .child(String.valueOf(chatId));
-
             referenceReceiver.setValue(mapp);
-
-//            referenceReceiver.child(AAppGlobal.Companion.UId).setValue(Integer.parseInt(String.valueOf(currentUserId)));
-//            referenceReceiver.child(AAppGlobal.Companion.ChatId).setValue(chatId);
-//            referenceReceiver.child(AAppGlobal.Companion.RecentMessage).setValue(message);
-//            referenceReceiver.child(AAppGlobal.Companion.UnreadMessageCount).setValue(unReadMessageCount);
-//            referenceReceiver.child(AAppGlobal.Companion.time).setValue(sendMessageTime);
-//            referenceReceiver.child(AAppGlobal.Companion.FId).setValue(Integer.parseInt(String.valueOf(currentUserId)));
-//            referenceReceiver.child(AAppGlobal.Companion.UserRoleId).setValue(AApplicationGlobal.readUserRoleId(context, "USERROLEID", 0));
 
             unReadMessageCount += 1;
 
@@ -287,11 +253,7 @@ public class ChatDetailActivity extends AppCompatActivity {
 
     private void loadChat() {
 
-//        mChats=new ArrayList<>();
-//        mAdapter.notifyDataSetChanged();
-
         DatabaseReference databaseReferenceChat = databaseReferenceOneToOneChat.child(chatId);
-
         databaseReferenceChat.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -300,16 +262,12 @@ public class ChatDetailActivity extends AppCompatActivity {
                 mAdapter.notifyDataSetChanged();
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-
                     dataSnapshot.getValue();
-
                     MessageDetailClass messageDetailClass = dataSnapshot.getValue(MessageDetailClass.class);
-                    //if (loadChatFirstTime) mChats.add(messageDetailClass);
 
                     boolean isFound = false;
 
                     for (int index = 0; index < mChats.size(); index++) {
-
                         if (mChats.get(index).getTime().equals(messageDetailClass.getTime())) {
                             isFound = true;
                             break;
@@ -332,8 +290,6 @@ public class ChatDetailActivity extends AppCompatActivity {
 
                 if (loadChatFirstTime) {
                     loadChatFirstTime = false;
-                    //mAdapter.notifyDataSetChanged();
-                    //refreshChat();
                 }
 
             }
@@ -348,14 +304,10 @@ public class ChatDetailActivity extends AppCompatActivity {
     private void refreshChat() {
 
         DatabaseReference databaseReferenceChat = databaseReferenceOneToOneChat.child(chatId);
-
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d("onChildAdded", "onChildAdded:" + dataSnapshot.getValue());
-
-                // A new comment has been added, add it to the displayed list
-
 
                 if (true) {
                     MessageDetailClass messageDetailClass = dataSnapshot.getValue(MessageDetailClass.class);
@@ -371,40 +323,25 @@ public class ChatDetailActivity extends AppCompatActivity {
 
                 }
 
-                // ...
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d("onChildChanged", "onChildChanged:" + dataSnapshot.getKey());
 
-                // A comment has changed, use the key to determine if we are displaying this
-                // comment and if so displayed the changed comment.
-
-
-                // ...
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 Log.d("onChildRemoved", "onChildRemoved:" + dataSnapshot.getKey());
-
-                // A comment has changed, use the key to determine if we are displaying this
-                // comment and if so remove it.
                 String commentKey = dataSnapshot.getKey();
 
-                // ...
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d("onChildMoved", "onChildMoved:" + dataSnapshot.getKey());
 
-                // A comment has changed position, use the key to determine if we are
-                // displaying this comment and if so move it.
-
-
-                // ...
             }
 
             @Override

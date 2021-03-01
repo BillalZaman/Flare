@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingUtil;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.infotech4it.flare.R;
 import com.infotech4it.flare.constant.Constant;
 import com.infotech4it.flare.databinding.ActivityHomeBinding;
@@ -46,6 +47,7 @@ public class HomeActivity extends AppCompatActivity implements MoreInterface, Ch
     private ChatFragment chatFragment = new ChatFragment();
     private SettingFragment settingFragment = new SettingFragment();
     private EasyImage easyImage;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,7 +113,15 @@ public class HomeActivity extends AppCompatActivity implements MoreInterface, Ch
             }
             case 2: {
                 // logout
-                
+                try {
+                    mAuth.signOut();
+                }finally {
+                    Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+
                 break;
             }
             case 3: {
