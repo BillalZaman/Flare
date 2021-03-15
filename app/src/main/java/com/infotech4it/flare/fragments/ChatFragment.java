@@ -1,12 +1,14 @@
 package com.infotech4it.flare.fragments;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -21,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -114,7 +117,9 @@ public class ChatFragment extends Fragment {
 
             @Override
             public void onLongItemClick(View view, int position) {
-
+                String chatid = messageAdapter.arrayList.get(position).getChatId();
+                String uid = messageAdapter.arrayList.get(position).getuId();
+                showDeleteAlertDialog(uid, chatid, currentUserId);
             }
         }));
 
@@ -166,6 +171,40 @@ public class ChatFragment extends Fragment {
 
         binding.recyclerview.addItemDecoration(itemDecoration);
 
+    }
+
+    public void showDeleteAlertDialog(String mUserId, String chatId, String currentuid) {
+        // create an alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Delete");
+        builder.setMessage("Do you want to Delete this Chat Parmanently ?");
+
+        // add a button
+        builder.setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                DatabaseReference db_node = FirebaseDatabase.getInstance().getReference().child("user_table").child(currentuid).child("chats").child(chatId);
+                db_node.removeValue();
+
+                DatabaseReference db_node_first = FirebaseDatabase.getInstance().getReference().child("user_table").child(mUserId).child("chats").child(chatId);
+                db_node_first.removeValue();
+
+                DatabaseReference db_node_second = FirebaseDatabase.getInstance().getReference().child("one_to_one_chat").child(chatId);
+                db_node_second.removeValue();
+
+                loadChat();
+            }
+        });
+
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        // create and show the alert dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void loadChat() {

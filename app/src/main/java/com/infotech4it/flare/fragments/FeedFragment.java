@@ -68,7 +68,7 @@ public class FeedFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         init();
         blogList = new ArrayList<>();
-        blogRecycleAdapter = new BlogRecycleAdapter(blogList);
+        blogRecycleAdapter = new BlogRecycleAdapter(blogList, getActivity());
         binding.recyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.recyclerview.setAdapter(blogRecycleAdapter);
 

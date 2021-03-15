@@ -19,6 +19,7 @@ import com.infotech4it.flare.databinding.ActivityHomeBinding;
 import com.infotech4it.flare.fragments.ChatFragment;
 import com.infotech4it.flare.fragments.FeedFragment;
 import com.infotech4it.flare.fragments.FindFriendFragment;
+import com.infotech4it.flare.fragments.LocationFeedFragment;
 import com.infotech4it.flare.fragments.ProfileFragment;
 import com.infotech4it.flare.fragments.SettingFragment;
 import com.infotech4it.flare.helpers.PreferenceHelper;
@@ -41,7 +42,8 @@ import static android.Manifest.permission.CAMERA;
 
 public class HomeActivity extends AppCompatActivity implements MoreInterface, ChatInterface, ImgClickInterface {
     private ActivityHomeBinding binding;
-    private FeedFragment feedFragment = new FeedFragment();
+//    private FeedFragment feedFragment = new FeedFragment();
+    private LocationFeedFragment feedFragment = new LocationFeedFragment();
     private ProfileFragment profileFragment = new ProfileFragment();
     private FindFriendFragment findFriend = new FindFriendFragment();
     private ChatFragment chatFragment = new ChatFragment();

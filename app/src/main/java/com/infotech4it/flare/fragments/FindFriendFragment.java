@@ -44,7 +44,8 @@ public class FindFriendFragment extends Fragment {
         binding.recyclerview.setAdapter(chatAdapter);
         binding.setOnClick(this);
 
-        UserFriendListFragment userFriendListFragment = new UserFriendListFragment();
+//        UserFriendListFragment userFriendListFragment = new UserFriendListFragment();
+        AcceptedFriendsFragment userFriendListFragment = new AcceptedFriendsFragment();
         UIHelper.replaceFragment(getContext(), R.id.frameLayout, userFriendListFragment);
         binding.txtFriends.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
         binding.txtFriends.setTextColor(getResources().getColor(R.color.white));
@@ -53,7 +54,8 @@ public class FindFriendFragment extends Fragment {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.txtFriends: {
-                UserFriendListFragment userFriendListFragment = new UserFriendListFragment();
+//                UserFriendListFragment userFriendListFragment = new UserFriendListFragment();
+                AcceptedFriendsFragment userFriendListFragment = new AcceptedFriendsFragment();
                 UIHelper.replaceFragment(getContext(), R.id.frameLayout, userFriendListFragment);
                 binding.txtFriends.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
                 binding.txtFriends.setTextColor(getResources().getColor(R.color.white));
@@ -61,16 +63,16 @@ public class FindFriendFragment extends Fragment {
                 break;
             }
             case R.id.txtFindFriends: {
-                UserFriendListFragment userFriendListFragment = new UserFriendListFragment();
-                UIHelper.replaceFragment(getContext(), R.id.frameLayout, userFriendListFragment);
+                AllUsersListingFragment allUsersListing = new AllUsersListingFragment();
+                UIHelper.replaceFragment(getContext(), R.id.frameLayout, allUsersListing);
                 binding.txtFindFriends.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
                 binding.txtFindFriends.setTextColor(getResources().getColor(R.color.white));
                 resetColorPreference(2);
                 break;
             }
             case R.id.txtRequests: {
-                UserFriendListFragment userFriendListFragment = new UserFriendListFragment();
-                UIHelper.replaceFragment(getContext(), R.id.frameLayout, userFriendListFragment);
+                RequestsFragment requestsFragment = new RequestsFragment();
+                UIHelper.replaceFragment(getContext(), R.id.frameLayout, requestsFragment);
                 binding.txtRequests.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
                 binding.txtRequests.setTextColor(getResources().getColor(R.color.white));
                 resetColorPreference(3);

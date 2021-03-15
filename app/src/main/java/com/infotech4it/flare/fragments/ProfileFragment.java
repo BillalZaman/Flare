@@ -105,21 +105,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class ProfileFragment extends Fragment {
     private FragmentProfileBinding binding;
-    private List<BlogPost> blogList;
-    private List<BlogPost> blogListFilter;
-    private FirebaseAuth mAuth= FirebaseAuth.getInstance();
-    private FirebaseFirestore firebaseFirestore;
-    private StorageReference storageReference;
-    private BlogRecycleAdapter blogRecycleAdapter;
-    String currentUid;
-    private LoaderDialog loaderDialog;
     Context context;
-    private String user_id, user_name, userImage_URL;
-    ProgressDialog progressDialog;
-    String imagePath;
-    private String uploadedImageUrl;
-    private static final int PICK_IMAGE_REQUEST = 1;
-    private Uri mImageUri;
 
 
     public ProfileFragment() {
@@ -141,150 +127,43 @@ public class ProfileFragment extends Fragment {
 
     public void init(){
         context = getActivity();
-        currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        storageReference = FirebaseStorage.getInstance().getReference();
-        loaderDialog = new LoaderDialog(getActivity());
-        getDataUser();
-        loadPosts();
         requestStoragePermission();
+        binding.setOnClick(this);
 
-        binding.imgUser.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent, PICK_IMAGE_REQUEST);
-            }
-        });
-
-        binding.flareid.setText("Your Flare ID: "+currentUid);
+        PersonalProfileFragment personalProfileFragment = new PersonalProfileFragment();
+        UIHelper.replaceFragment(getContext(), R.id.frameLayout, personalProfileFragment);
+        binding.txtprofile.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+        binding.txtprofile.setTextColor(getResources().getColor(R.color.white));
+        binding.txtfeed.setBackgroundColor(getResources().getColor(R.color.light_color));
+        binding.txtfeed.setTextColor(getResources().getColor(R.color.black));
     }
 
-    public void onClick(View view){
-        switch (view.getId()){
-            case R.id.imgUser:{
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.txtprofile: {
+                PersonalProfileFragment personalProfileFragment = new PersonalProfileFragment();
+                UIHelper.replaceFragment(getContext(), R.id.frameLayout, personalProfileFragment);
+                binding.txtprofile.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                binding.txtprofile.setTextColor(getResources().getColor(R.color.white));
+
+                binding.txtfeed.setBackgroundColor(getResources().getColor(R.color.light_color));
+                binding.txtfeed.setTextColor(getResources().getColor(R.color.black));
 
                 break;
             }
-            case R.id.imgcover:{
+            case R.id.txtfeed: {
+                PersonalFeedFragment personalFeedFragment = new PersonalFeedFragment();
+                UIHelper.replaceFragment(getContext(), R.id.frameLayout, personalFeedFragment);
+                binding.txtfeed.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                binding.txtfeed.setTextColor(getResources().getColor(R.color.white));
 
+                binding.txtprofile.setBackgroundColor(getResources().getColor(R.color.light_color));
+                binding.txtprofile.setTextColor(getResources().getColor(R.color.black));
                 break;
             }
+
         }
     }
-
-    public void getDataUser(){
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("user_table");
-
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        final DatabaseReference orders_Reference = myRef.child(uid);
-        orders_Reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot data : snapshot.getChildren()) {
-                    if(data.getKey().equals("name")){
-                        user_name = data.getValue().toString();
-                        binding.txtUserName.setText(user_name);
-                    }
-                    if (data.getKey().equals("email")){
-                        String email = data.getValue().toString();
-                        binding.flareemail.setText("Your Flare Email: "+email);
-                    }
-                    if (data.getKey().equals("number")){
-                        String num = data.getValue().toString();
-                        binding.flarenumber.setText("Your Flare Number: "+num);
-                    }
-                    if (data.getKey().equals("profile")){
-                        userImage_URL = data.getValue().toString();
-
-                        if(userImage_URL!=null){
-
-                            Glide.with(context).
-                                    load(userImage_URL).
-                                    error(AvatarGenerator.Companion.avatarImage(context, 200,
-                                            AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
-                                            user_name,false))
-                                    .placeholder(AvatarGenerator.Companion.avatarImage(context, 200,
-                                            AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
-                                            user_name,false))
-                                    .into(binding.imgUser);
-                        }
-                        else {
-                            Glide.with(context)
-                                    .load(AvatarGenerator.Companion.avatarImage(context, 200,
-                                            AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
-                                            user_name,false))
-                                    .into(binding.imgUser);
-                        }
-
-
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-    }
-
-    public void loadPosts(){
-        loaderDialog.startLoadingDialog();
-        blogList = new ArrayList<>();
-        blogListFilter = new ArrayList<>();
-        blogRecycleAdapter = new BlogRecycleAdapter(blogList);
-        binding.recyclerviewUserPost.setLayoutManager(new LinearLayoutManager(getActivity()));
-        binding.recyclerviewUserPost.setAdapter(blogRecycleAdapter);
-        firebaseFirestore = FirebaseFirestore.getInstance();
-
-        firebaseFirestore.collection("Posts").get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot documentSnapshots) {
-                        if (documentSnapshots.isEmpty()) {
-                            loaderDialog.dismiss();
-                            String TAG="CurrentUserPosts";
-                            Log.d(TAG, "onSuccess: LIST EMPTY");
-                            Toast.makeText(getContext(), "Current User Posts List is Empty", Toast.LENGTH_LONG).show();
-                            return;
-                        } else {
-
-                            for (DocumentChange doc : documentSnapshots.getDocumentChanges()) {
-                                String BlogPostId = doc.getDocument().getId();
-                                BlogPost blogPost = doc.getDocument().toObject(BlogPost.class).withId(BlogPostId);
-                                blogList.add(blogPost);
-                            }
-
-                            for (int i=0; i<blogList.size(); i++){
-                                if (blogList.get(i).getUser_id().contains(currentUid)){
-                                    BlogPost blogPost = blogList.get(i);
-                                    blogListFilter.add(blogPost);
-                                }
-                            }
-
-                            blogList.clear();
-                            blogList.addAll(blogListFilter);
-
-                            blogRecycleAdapter.notifyDataSetChanged();
-                            loaderDialog.dismiss();
-                        }
-                    }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            loaderDialog.dismiss();
-                            Toast.makeText(getContext(), "Error getting Current User Posts", Toast.LENGTH_LONG).show();
-                        }
-                    });
-
-
-    }
-
 
     private void requestStoragePermission() {
         Dexter.withActivity(getActivity())
@@ -344,211 +223,6 @@ public class ProfileFragment extends Fragment {
         Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
         intent.setData(uri);
         startActivityForResult(intent, 101);
-    }
-
-    @Override
-    public void onActivityResult(int reqCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(reqCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) {
-            if (reqCode == PICK_IMAGE_REQUEST && data != null && data.getData() != null) {
-
-                String fileExtension = getFileExtension(data.getData(), getActivity());
-
-                if (isItImage(fileExtension)) {
-                    mImageUri = data.getData();
-                    String path = getRealPathFromUri(context, mImageUri);
-                    imagePath = path;
-
-                    setUpGroup();
-
-                }  else {
-                    Toast.makeText(context, "Select Valid File", Toast.LENGTH_LONG).show();
-                }
-
-            }
-        }
-
-    }
-
-
-    private void setUpGroup() {
-        createGroup(new FireBaseResponseCallBack() {
-            @Override
-            public void onCompleteCallBack(boolean isOk, String message) {
-
-                if (isOk) {
-
-                }
-
-                else Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void createGroup(final FireBaseResponseCallBack callBack) {
-
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setTitle("Uploading Image...");
-        progressDialog.show();
-
-        if (imagePath == null) {
-            if (progressDialog!=null){
-                progressDialog.dismiss();
-            }
-            Toast.makeText(context, "image path is null", Toast.LENGTH_SHORT).show();
-
-        } else {
-
-
-            uploadImageToStorage(new FireBaseResponseCallBack() {
-                @Override
-                public void onCompleteCallBack(boolean isOk, String message) {
-
-                    if (isOk) {
-                        uploadedImageUrl=message;
-                        String firebaseID = mAuth.getCurrentUser().getUid();
-                        DatabaseReference databaseReference;
-                        databaseReference = FirebaseDatabase.getInstance().getReference().child("user_table").child(firebaseID);
-                        HashMap<String, Object> result = new HashMap<>();
-                        result.put("profile", uploadedImageUrl);
-                        databaseReference.updateChildren(result);
-
-                        firebaseFirestore.collection("Users").document(firebaseID).update("image", uploadedImageUrl);
-
-                        if (progressDialog!=null){
-                            progressDialog.dismiss();
-                        }
-
-                        Toast.makeText(getActivity(), "Profile Successfully Updated", Toast.LENGTH_LONG).show();
-
-                        if(uploadedImageUrl!=null){
-
-                            Glide.with(context).
-                                    load(uploadedImageUrl).
-                                    error(AvatarGenerator.Companion.avatarImage(context, 200,
-                                            AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
-                                            user_name,false))
-                                    .placeholder(AvatarGenerator.Companion.avatarImage(context, 200,
-                                            AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
-                                            user_name,false))
-                                    .into(binding.imgUser);
-                        }
-                        else {
-                            Glide.with(context)
-                                    .load(AvatarGenerator.Companion.avatarImage(context, 200,
-                                            AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
-                                            user_name,false))
-                                    .into(binding.imgUser);
-                        }
-
-
-
-                    } else {
-                        if (progressDialog!=null){
-                            progressDialog.dismiss();
-                        }
-                        callBack.onCompleteCallBack(false, message);
-                    }
-                }
-            });
-
-
-        }
-
-
-    }
-
-
-    private void uploadImageToStorage(final FireBaseResponseCallBack callBack) {
-
-        InputStream stream;
-        StorageReference imageStorageRef = storageReference.child("profile_images/" +
-                System.currentTimeMillis() +
-                ".jpg");
-
-        try {
-
-            stream = new FileInputStream(new File(imagePath));
-            UploadTask uploadTask = imageStorageRef.putStream(stream);
-
-            uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-
-                @Override
-                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-
-                    if (!task.isSuccessful()) {
-                        throw task.getException();
-
-                    }
-
-                    return imageStorageRef.getDownloadUrl();
-                }
-
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-
-                    if (task.isSuccessful()) {
-                        callBack.onCompleteCallBack(true, task.getResult().toString());
-
-                    } else {
-
-                        if (callBack != null) {
-                            if (task.getException() != null) {
-                                callBack.onCompleteCallBack(false, task.getException().getMessage());
-                            } else {
-                                callBack.onCompleteCallBack(false, "Unknow Error Occured");
-                            }
-                        }
-
-                    }
-
-                }
-            });
-
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    public static String getFileExtension(Uri uri, Context context) {
-        String extension;
-        ContentResolver contentResolver = context.getContentResolver();
-        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
-        extension= mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
-        return extension;
-    }
-
-    public static boolean isItImage(String extension){
-
-        if(extension.equalsIgnoreCase("jpg")){
-            return true;
-        }
-
-        else if(extension.equalsIgnoreCase("jpeg")){
-            return true;
-        }
-        else return extension.equalsIgnoreCase("png");
-
-    }
-
-    public static String getRealPathFromUri(Context context, Uri contentUri) {
-        Cursor cursor = null;
-        try {
-            String[] proj = { MediaStore.Images.Media.DATA };
-            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
     }
 
 

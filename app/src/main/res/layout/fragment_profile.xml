@@ -12,163 +12,65 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/grey_vlight"
-        tools:context=".fragments.ProfileFragment">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/tab"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:background="@color/colorPrimary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:fontFamily="@font/poppins_medium"
-                android:gravity="center"
-                android:text="Profile"
-                android:textColor="@color/white"
-                android:textSize="@dimen/textnormallarge"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <ImageView
-            android:id="@+id/imgcover"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:adjustViewBounds="false"
-            android:cropToPadding="false"
-            android:scaleType="fitXY"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tab" />
+        tools:context=".fragments.FindFriendFragment">
 
         <LinearLayout
-            android:id="@+id/adjust"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@color/unSelectTabColor"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tab"
-            app:layout_constraintVertical_bias="0.16000003">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/imgUser"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:adjustViewBounds="false"
-                android:cropToPadding="false"
-                android:src="@drawable/nature"
-                android:layout_gravity="center"
-                android:layout_margin="5dp"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/profileinfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/adjust">
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
+                android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/txtUserName"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginEnd="16dp"
-                            android:fontFamily="@font/poppins_semibold"
-                            android:gravity="center"
-                            android:text="Bilal Zaman"
-                            android:textAlignment="center"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/textnormallarge" />
+                <TextView
+                    android:id="@+id/txtprofile"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/poppins_medium"
+                    android:gravity="center"
+                    android:paddingStart="30dp"
+                    android:paddingEnd="30dp"
+                    android:text="Profile"
+                    android:onClick="@{(view)->onClick.onClick(view)}"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/textnormal"
+                    android:background="@color/light_color" />
 
-                        <TextView
-                            android:id="@+id/flareid"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="15sp"
-                            android:gravity="center"
-                            android:textColor="@color/black"
-                            android:layout_margin="2dp"/>
-
-                        <TextView
-                            android:id="@+id/flareemail"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="15sp"
-                            android:gravity="center"
-                            android:textColor="@color/black"
-                            android:layout_margin="2dp"/>
-
-                        <TextView
-                            android:id="@+id/flarenumber"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="15sp"
-                            android:gravity="center"
-                            android:textColor="@color/black"
-                            android:layout_margin="2dp"/>
-
-                    </LinearLayout>
-                </ScrollView>
+                <TextView
+                    android:id="@+id/txtfeed"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:text="Personal Feed"
+                    android:onClick="@{(view)->onClick.onClick(view)}"
+                    android:paddingStart="30dp"
+                    android:paddingEnd="30dp"
+                    android:textAlignment="center"
+                    android:gravity="center"
+                    android:textSize="@dimen/textnormal"
+                    android:fontFamily="@font/poppins_medium"
+                    android:textColor="@color/black"
+                    android:background="@color/grey_vlight"/>
 
             </LinearLayout>
 
+            <FrameLayout
+                android:id="@+id/frameLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/nav_scroller">
+
+            </FrameLayout>
+
         </LinearLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerview"
-            android:visibility="gone"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/adjust"
-            tools:listitem="@layout/item_list_friendlist">
-
-        </androidx.recyclerview.widget.RecyclerView>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerview_user_post"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="5dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/adjust"
-            tools:listitem="@layout/blog_list_item" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

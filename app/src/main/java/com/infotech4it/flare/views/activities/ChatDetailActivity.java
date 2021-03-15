@@ -12,19 +12,24 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.infotech4it.flare.R;
 import com.infotech4it.flare.databinding.ActivityChatDetailBinding;
 import com.infotech4it.flare.helpers.AAppGlobal;
 import com.infotech4it.flare.helpers.AvatarGenerator;
+import com.infotech4it.flare.helpers.LoaderDialog;
 import com.infotech4it.flare.interfaces.ChatScreenMediaListener;
 import com.infotech4it.flare.views.adapters.MessageDetailAdapter;
 import com.infotech4it.flare.views.models.FirebaseUserTableModal;
@@ -58,6 +63,7 @@ public class ChatDetailActivity extends AppCompatActivity {
     private String currentUserId;
     private long sendMessageTime = 0;
     private String mUserId, mUserName,mUserEmail, mPhotoURL;
+    private LoaderDialog loaderDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +71,7 @@ public class ChatDetailActivity extends AppCompatActivity {
         currentUserId = mAuth.getCurrentUser().getUid();
         binding = DataBindingUtil.setContentView(this,R.layout.activity_chat_detail);
         init();
-
+        loaderDialog = new LoaderDialog(this);
 
         if (getIntent().hasExtra("existing")) {
             messageModelClass = (MessageModelClass) getIntent().getSerializableExtra("modal");
@@ -130,6 +136,29 @@ public class ChatDetailActivity extends AppCompatActivity {
             sendMessage();
         });
 
+        binding.delete.setVisibility(View.GONE);
+
+        binding.delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                DeleteChat();
+
+                try {
+
+                    DatabaseReference db_node = FirebaseDatabase.getInstance().getReference().child("user_table").child(currentUserId).child("chats").child(chatId);
+                    db_node.removeValue();
+
+                    DatabaseReference db_node_first = FirebaseDatabase.getInstance().getReference().child("user_table").child(mUserId).child("chats").child(chatId);
+                    db_node_first.removeValue();
+
+                    DatabaseReference db_node_second = FirebaseDatabase.getInstance().getReference().child("one_to_one_chat").child(chatId);
+                    db_node_second.removeValue();
+
+                }finally {
+                    finish();
+                }
+            }
+        });
 
     }
 
@@ -152,6 +181,7 @@ public class ChatDetailActivity extends AppCompatActivity {
         if (chatId != null) {
             loadChat();
         }
+        StopChat();
     }
 
     @Override
@@ -353,4 +383,177 @@ public class ChatDetailActivity extends AppCompatActivity {
         databaseReferenceChat.addChildEventListener(childEventListener);
     }
 
+    public void StopChat(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference rootRef = database.getReference("friends").child(currentUserId);
+
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild(mUserId)) {
+                    binding.nofriend.setVisibility(View.GONE);
+                    binding.edittextChatbox.setVisibility(View.VISIBLE);
+                    binding.buttonChatboxSend.setVisibility(View.VISIBLE);
+//                    Toast.makeText(context, "This Person is still friend", Toast.LENGTH_LONG).show();
+                }else {
+//                    Toast.makeText(context, "This Person is no more friend", Toast.LENGTH_LONG).show();
+                    binding.nofriend.setVisibility(View.VISIBLE);
+                    binding.edittextChatbox.setVisibility(View.GONE);
+                    binding.buttonChatboxSend.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
+
+    public void DeleteChat(){
+        loaderDialog.startLoadingDialog();
+        database.getReference("user_table").child(currentUserId).child("chats").removeValue()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        if (task.isSuccessful()){
+
+                            database.getReference("user_table").child(mUserId).child("chats").removeValue()
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+
+                                            if (task.isSuccessful()){
+
+                                                database.getReference("one_to_one_chat").child(chatId).removeValue()
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+
+                                                                if (task.isSuccessful()){
+                                                                    RecheckDelete();
+//                                                                    try {
+//                                                                        Toast.makeText(ChatDetailActivity.this, "Chat is Deleted Successfully...!!", Toast.LENGTH_SHORT).show();
+//                                                                    }finally {
+//                                                                        finish();
+//                                                                    }
+                                                                }
+                                                                else {
+                                                                    loaderDialog.dismiss();
+                                                                }
+                                                            }
+                                                        });
+
+                                            }
+                                            else {
+                                                loaderDialog.dismiss();
+                                            }
+                                        }
+                                    });
+
+                        }
+                        else {
+                            loaderDialog.dismiss();
+                        }
+                    }
+                });
+    }
+
+    public void RecheckDelete(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference rootRef = database.getReference("user_table").child(currentUserId);
+
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild("chats")) {
+                    database.getReference("user_table").child(currentUserId).child("chats").removeValue()
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+
+                                    if (task.isSuccessful()){
+                                        try {
+                                            loaderDialog.dismiss();
+                                            Toast.makeText(ChatDetailActivity.this, "Chat is Deleted Successfully...!!", Toast.LENGTH_SHORT).show();
+                                        }finally {
+                                            finish();
+                                        }
+                                    }else {
+                                        loaderDialog.dismiss();
+                                    }
+                                }
+                            });
+
+                }else {
+                    try {
+                        loaderDialog.dismiss();
+                        Toast.makeText(ChatDetailActivity.this, "Chat is Deleted Successfully...!!", Toast.LENGTH_SHORT).show();
+                    }finally {
+                        finish();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
+
+//    public void deletemessages(){
+//
+//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+//        Query sender = ref.child("user_table").child(currentUserId).orderByChild("chats");
+//        sender.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for (DataSnapshot appleSnapshot: dataSnapshot.getChildren()) {
+//                    appleSnapshot.getRef().removeValue();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+////                Log.e(TAG, "onCancelled", databaseError.toException());
+//            }
+//        });
+//
+//        Query receiver = ref.child("user_table").child(mUserId).orderByChild("chats");
+//        receiver.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for (DataSnapshot appleSnapshot: dataSnapshot.getChildren()) {
+//                    appleSnapshot.getRef().removeValue();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+////                Log.e(TAG, "onCancelled", databaseError.toException());
+//            }
+//        });
+//
+//        Query chatid = ref.child("one_to_one_chat").orderByChild(chatId);
+//        chatid.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for (DataSnapshot appleSnapshot: dataSnapshot.getChildren()) {
+//                    appleSnapshot.getRef().removeValue();
+//                }
+//
+//                finish();
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+////                Log.e(TAG, "onCancelled", databaseError.toException());
+//            }
+//        });
+//
+//    }
 }

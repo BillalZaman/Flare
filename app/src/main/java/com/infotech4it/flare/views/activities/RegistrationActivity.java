@@ -46,7 +46,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = database.getReference("user_table");
-    private FirebaseFirestore fireStore = FirebaseFirestore.getInstance();;
+    private FirebaseFirestore fireStore = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,4 +1,4 @@
-package com.infotech4it.flare.views.activities;
+package com.infotech4it.flare.fragments;
 
 import android.Manifest;
 import android.app.ProgressDialog;
@@ -7,72 +7,61 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.infotech4it.flare.R;
-import com.infotech4it.flare.databinding.ActivityPostBinding;
-import com.infotech4it.flare.googleplayservices.GetAddressIntentService;
+import com.infotech4it.flare.databinding.FragmentProfileBinding;
 import com.infotech4it.flare.helpers.AvatarGenerator;
-import com.infotech4it.flare.helpers.UIHelper;
+import com.infotech4it.flare.helpers.LoaderDialog;
 import com.infotech4it.flare.interfaces.FireBaseResponseCallBack;
+import com.infotech4it.flare.views.adapters.BlogRecycleAdapter;
+import com.infotech4it.flare.views.models.BlogPost;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -81,197 +70,218 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.PermissionRequestErrorListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
 
-import id.zelory.compressor.Compressor;
-import pl.aprilapps.easyphotopicker.ChooserType;
-import pl.aprilapps.easyphotopicker.DefaultCallback;
-import pl.aprilapps.easyphotopicker.EasyImage;
-import pl.aprilapps.easyphotopicker.MediaFile;
-import pl.aprilapps.easyphotopicker.MediaSource;
+import static android.app.Activity.RESULT_OK;
 
-import static android.Manifest.permission.CAMERA;
 
-public class PostActivity extends AppCompatActivity {
-    private ActivityPostBinding binding;
-    private String user_id, user_name, userImage_URL;
-    private FirebaseAuth mauth;
-    private FirebaseFirestore firebaseFirestore;
+public class PersonalProfileFragment extends Fragment {
+    private List<BlogPost> blogList;
+    private List<BlogPost> blogListFilter;
+    private FirebaseAuth mAuth= FirebaseAuth.getInstance();
+    private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
     private StorageReference storageReference;
-    private static final int PICK_IMAGE_REQUEST = 1;
-    private Uri mImageUri;
+    private BlogRecycleAdapter blogRecycleAdapter;
+    String currentUid;
     Context context;
+    private String user_id, user_name, userImage_URL, user_email, user_number, user_password;
+    ProgressDialog progressDialog;
     String imagePath;
     private String uploadedImageUrl;
-    ProgressDialog progressDialog;
-    private FirebaseAuth mAuth= FirebaseAuth.getInstance();
-    private FusedLocationProviderClient fusedLocationClient;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 2;
-    private LocationAddressResultReceiver addressResultReceiver;
-    private Location currentLocation;
-    private LocationCallback locationCallback;
-    double longitude, latitude;
-    boolean isImage=false;
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private Uri mImageUri;
+    private ImageView imgProifle;
+    private TextView mFirebaseID, btnUpdate;
+    private TextInputLayout tName, tEmail, tPassword, tNumber;
+    private TextInputEditText edtName, edtEmail, edtPassword, edtNumber;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference databaseReference = database.getReference("user_table");
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_post);
-        context = this;
-        init();
 
-        addressResultReceiver = new LocationAddressResultReceiver(new Handler());
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                currentLocation = locationResult.getLocations().get(0);
-                getAddress();
-            }
-        };
-        startLocationUpdates();
-        turnOnLocation();
+    public PersonalProfileFragment() {
+        // Required empty public constructor
     }
 
-    public void init() {
-        binding.setOnClick(this);
-        mauth = FirebaseAuth.getInstance();
-        user_id = mauth.getCurrentUser().getUid();
-        firebaseFirestore = FirebaseFirestore.getInstance();
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_personal_profile, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        init(view);
+    }
+
+    public void init(View view){
+        context = getActivity();
+        currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         storageReference = FirebaseStorage.getInstance().getReference();
-        requestStoragePermission();
+
+        imgProifle = view.findViewById(R.id.imgUser);
+        mFirebaseID = view.findViewById(R.id.flareid);
+        tName = view.findViewById(R.id.text_name);
+        tEmail = view.findViewById(R.id.text_email);
+        tPassword = view.findViewById(R.id.text_Password);
+        tNumber = view.findViewById(R.id.text_number);
+        edtName = view.findViewById(R.id.edtName);
+        edtNumber = view.findViewById(R.id.edtNumber);
+        edtEmail = view.findViewById(R.id.edtEmail);
+        edtPassword = view.findViewById(R.id.edtPassword);
+        btnUpdate = view.findViewById(R.id.btnUpdate);
+
+        setViews();
+
+    }
+
+    public void setViews(){
         getDataUser();
+        requestStoragePermission();
+        imgProifle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(intent, PICK_IMAGE_REQUEST);
+            }
+        });
 
+        mFirebaseID.setText("Your Flare ID: "+currentUid);
+
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateProfile();
+            }
+        });
     }
 
-    public void turnOnLocation(){
+    public void updateProfile(){
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setTitle("Updating...");
+        progressDialog.show();
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-        boolean gps_enabled = false;
-        boolean network_enabled = false;
+        if (!edtName.getText().toString().trim().isEmpty()){
+            databaseReference.child(uid).child("name").setValue(edtName.getText().toString());
+            String firebaseID = mAuth.getCurrentUser().getUid();
+            firebaseFirestore.collection("Users").document(firebaseID).update("name", edtName.getText().toString());
+            progressDialog.dismiss();
+            edtName.setText("");
+        }
 
-        try {
-            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        } catch(Exception ex) {}
+        if (!edtNumber.getText().toString().trim().isEmpty()){
+            databaseReference.child(uid).child("number").setValue(edtName.getText().toString());
+            progressDialog.dismiss();
+            edtNumber.setText("");
+        }
 
-        try {
-            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        } catch(Exception ex) {}
+        if (!edtPassword.getText().toString().trim().isEmpty()){
+            progressDialog.dismiss();
+            if (edtPassword.getText().toString().length()<6){
+                Toast.makeText(context, "Password length is too short", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-        if(!gps_enabled && !network_enabled) {
-            // notify user
-            new AlertDialog.Builder(context)
-                    .setMessage("Turn On GPS Locations")
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setTitle("Updating Password...");
+            progressDialog.show();
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            AuthCredential credential = EmailAuthProvider.getCredential(user_email, user_password);
+
+            user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
-                        public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                            context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                user.updatePassword(edtPassword.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            databaseReference.child(uid).child("password").setValue(edtPassword.getText().toString());
+                                            Toast.makeText(context, "Password updated", Toast.LENGTH_SHORT).show();
+                                            progressDialog.dismiss();
+                                            edtPassword.setText("");
+                                            UpdateEmail();
+
+                                        } else {
+                                            Toast.makeText(context, "Error password not updated", Toast.LENGTH_SHORT).show();
+                                            progressDialog.dismiss();
+                                        }
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(context, "Error auth failed", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                            }
                         }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            finish();
-                        }
-                    })
-                    .show();
+                    });
+
+
+        }else {
+            UpdateEmail();
         }
 
+
+
+//        getDataUser();
     }
 
-    @SuppressWarnings("MissingPermission")
-    private void startLocationUpdates() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new
-                            String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    LOCATION_PERMISSION_REQUEST_CODE);
-        }
-        else {
-            LocationRequest locationRequest = new LocationRequest();
-            locationRequest.setInterval(2000);
-            locationRequest.setFastestInterval(1000);
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
-        }
-    }
-
-    @SuppressWarnings("MissingPermission")
-    private void getAddress() {
-        if (!Geocoder.isPresent()) {
-            Toast.makeText(PostActivity.this, "Can't find current address, ",
-                    Toast.LENGTH_SHORT).show();
-            return;
-        }
-        Intent intent = new Intent(this, GetAddressIntentService.class);
-        intent.putExtra("add_receiver", addressResultReceiver);
-        intent.putExtra("add_location", currentLocation);
-        startService(intent);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull
-            int[] grantResults) {
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startLocationUpdates();
+    public void UpdateEmail(){
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        if (!edtEmail.getText().toString().trim().isEmpty()){
+            progressDialog.dismiss();
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setTitle("Updating Email...");
+            progressDialog.show();
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            String mPassword;
+            if (!edtPassword.getText().toString().trim().isEmpty()){
+                mPassword = edtPassword.getText().toString().trim();
+            }else {
+                mPassword = user_password;
             }
-            else {
-                Toast.makeText(this, "Location permission not granted, " + "restart the app if you want the feature", Toast.LENGTH_SHORT).show();
-            }
+            AuthCredential credential = EmailAuthProvider.getCredential(user_email, mPassword);
+
+            user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()){
+                        user.updateEmail(edtEmail.getText().toString())
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            databaseReference.child(uid).child("email").setValue(edtEmail.getText().toString());
+                                            Toast.makeText(context, "Email updated", Toast.LENGTH_SHORT).show();
+                                            progressDialog.dismiss();
+                                            edtEmail.setText("");
+                                            getDataUser();
+                                        } else {
+                                            Toast.makeText(context, "Error email not updated", Toast.LENGTH_SHORT).show();
+                                            progressDialog.dismiss();
+                                        }
+                                    }
+                                });
+                    }else {
+                        Toast.makeText(context, "Error auth failed", Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                    }
+                }
+            });
+
+        }else {
+            getDataUser();
         }
     }
-
-    private class LocationAddressResultReceiver extends ResultReceiver {
-        LocationAddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-            if (resultCode == 0) {
-                Log.d("Address", "Location null retrying");
-                getAddress();
-            }
-            if (resultCode == 1) {
-                Toast.makeText(PostActivity.this, "Address not found", Toast.LENGTH_SHORT).show();
-            }
-
-            if (resultCode == 2) {
-//                Toast.makeText(PostActivity.this, "Address found Successfully", Toast.LENGTH_SHORT).show();
-                String currentAdd = resultData.getString("address_result");
-                latitude = resultData.getDouble("latitude");
-                longitude = resultData.getDouble("longitude");
-//                Toast.makeText(PostActivity.this, latitude+" -- "+longitude, Toast.LENGTH_SHORT).show();
-            }
-
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        startLocationUpdates();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        fusedLocationClient.removeLocationUpdates(locationCallback);
-    }
-
 
     public void getDataUser(){
 
@@ -286,7 +296,19 @@ public class PostActivity extends AppCompatActivity {
                 for (DataSnapshot data : snapshot.getChildren()) {
                     if(data.getKey().equals("name")){
                         user_name = data.getValue().toString();
-                        binding.textView3.setText(user_name);
+                        tName.setHint("Your Flare Name: "+user_name);
+                    }
+                    if (data.getKey().equals("email")){
+                        user_email = data.getValue().toString();
+                        tEmail.setHint("Your Flare Email: "+user_email);
+                    }
+                    if (data.getKey().equals("number")){
+                        user_number = data.getValue().toString();
+                        tNumber.setHint("Your Flare Number: "+user_number);
+                    }
+                    if (data.getKey().equals("password")){
+                        user_password = data.getValue().toString();
+                        tPassword.setHint("Your Flare Password: "+user_password);
                     }
                     if (data.getKey().equals("profile")){
                         userImage_URL = data.getValue().toString();
@@ -301,14 +323,14 @@ public class PostActivity extends AppCompatActivity {
                                     .placeholder(AvatarGenerator.Companion.avatarImage(context, 200,
                                             AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
                                             user_name,false))
-                                    .into(binding.imgUser);
+                                    .into(imgProifle);
                         }
                         else {
                             Glide.with(context)
                                     .load(AvatarGenerator.Companion.avatarImage(context, 200,
                                             AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
                                             user_name,false))
-                                    .into(binding.imgUser);
+                                    .into(imgProifle);
                         }
 
 
@@ -324,101 +346,8 @@ public class PostActivity extends AppCompatActivity {
 
     }
 
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.imgBack: {
-                finish();
-                break;
-            }
-            case R.id.imgAddPic: {
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent, PICK_IMAGE_REQUEST);
-                break;
-            }
-            case R.id.btnPost: {
-//                Toast.makeText(context, binding.location.getProgress()+"--this is range--", Toast.LENGTH_SHORT).show();
-                if (latitude==0 && longitude==0){
-                    Toast.makeText(context, "Unable to get your Location. Kindly Check Your Internet and GPS Connection", Toast.LENGTH_SHORT).show();
-                    return;
-                }else {
-
-                    if (isImage){
-                        setUpGroup();
-                    }else {
-                        PostWithoutImage();
-                    }
-//                    if (imagePath!=null){
-//                        setUpGroup();
-//                    }else {
-//                        PostWithoutImage();
-//                    }
-
-                }
-
-                break;
-            }
-            case R.id.imgLocation: {
-                UIHelper.openActivityAndSendActivityName(this, MapActivity.class, "PostActivity");
-                break;
-            }
-        }
-    }
-
-    public void PostWithoutImage(){
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setTitle("Uploading Post...");
-        progressDialog.show();
-
-        Map<String,Object> postMap = new HashMap<>();
-        postMap.put("image_url","null");
-        postMap.put("desc",binding.edtStatusDesc.getText().toString().trim());
-        postMap.put("user_id",user_id);
-        postMap.put("user_name",user_name);
-        postMap.put("image_thumb","null");
-        postMap.put("latitude", latitude);
-        postMap.put("longitude", longitude);
-        postMap.put("kilometer", binding.location.getProgress());
-        postMap.put("timeStamp", FieldValue.serverTimestamp());
-
-        firebaseFirestore.collection("Posts").add(postMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentReference> task) {
-                if (task.isSuccessful()) {
-                    if (progressDialog!=null){
-                        progressDialog.dismiss();
-                    }
-
-                    Toast.makeText(PostActivity.this, "Successfully Posted", Toast.LENGTH_LONG).show();
-//                    finish();
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        public void run() {
-                            try {
-                                Intent intent = new Intent(PostActivity.this, HomeActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            }finally {
-                                finish();
-                            }
-
-                        }
-                    }, 300);
-
-                } else {
-                    if (progressDialog!=null){
-                        progressDialog.dismiss();
-                    }
-
-                    Toast.makeText(PostActivity.this, "Error" + task.getException().toString(), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-    }
-
     private void requestStoragePermission() {
-        Dexter.withActivity(this)
+        Dexter.withActivity(getActivity())
                 .withPermissions(
                         Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -426,7 +355,7 @@ public class PostActivity extends AppCompatActivity {
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
                         if (report.areAllPermissionsGranted()) {
-                            Toast.makeText(getApplicationContext(), "All permissions are granted!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "All permissions are granted!", Toast.LENGTH_SHORT).show();
                         }
 
                         if (report.isAnyPermissionPermanentlyDenied()) {
@@ -442,7 +371,7 @@ public class PostActivity extends AppCompatActivity {
                 withErrorListener(new PermissionRequestErrorListener() {
                     @Override
                     public void onError(DexterError error) {
-                        Toast.makeText(getApplicationContext(), "Error occurred! ", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Error occurred! ", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .onSameThread()
@@ -450,7 +379,7 @@ public class PostActivity extends AppCompatActivity {
     }
 
     private void showSettingsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(PostActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Need Storage Permission");
         builder.setMessage("This app needs storage permission to upload image for user Profile. You can grant them in app settings.");
         builder.setPositiveButton("GOTO SETTINGS", new DialogInterface.OnClickListener() {
@@ -472,20 +401,20 @@ public class PostActivity extends AppCompatActivity {
 
     private void openSettings() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        Uri uri = Uri.fromParts("package", getPackageName(), null);
+        Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
         intent.setData(uri);
         startActivityForResult(intent, 101);
     }
 
     @Override
-    protected void onActivityResult(int reqCode, int resultCode, Intent data) {
+    public void onActivityResult(int reqCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
             if (reqCode == PICK_IMAGE_REQUEST && data != null && data.getData() != null) {
 
-                String fileExtension = getFileExtension(data.getData(), this);
-                isImage=true;
+                String fileExtension = getFileExtension(data.getData(), getActivity());
+
                 if (isItImage(fileExtension)) {
                     mImageUri = data.getData();
                     String path = getRealPathFromUri(context, mImageUri);
@@ -494,18 +423,17 @@ public class PostActivity extends AppCompatActivity {
                         String mPath = getPathFromUri(context, mImageUri);
                         imagePath = mPath;
                     }
-                    Glide.with(binding.imgStatus.getContext())
-                            .load(mImageUri)
-                            .error(R.drawable.ic_profile)
-                            .into(binding.imgStatus);
+                    setUpGroup();
 
                 }  else {
-                    Toast.makeText(this, "Select Valid File", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Select Valid File", Toast.LENGTH_LONG).show();
                 }
 
             }
         }
+
     }
+
 
     private void setUpGroup() {
         createGroup(new FireBaseResponseCallBack() {
@@ -542,51 +470,42 @@ public class PostActivity extends AppCompatActivity {
 
                     if (isOk) {
                         uploadedImageUrl=message;
+                        String firebaseID = mAuth.getCurrentUser().getUid();
+                        DatabaseReference databaseReference;
+                        databaseReference = FirebaseDatabase.getInstance().getReference().child("user_table").child(firebaseID);
+                        HashMap<String, Object> result = new HashMap<>();
+                        result.put("profile", uploadedImageUrl);
+                        databaseReference.updateChildren(result);
 
-                        Map<String,Object> postMap = new HashMap<>();
-                        postMap.put("image_url",uploadedImageUrl);
-                        postMap.put("desc",binding.edtStatusDesc.getText().toString().trim());
-                        postMap.put("user_id",user_id);
-                        postMap.put("user_name",user_name);
-                        postMap.put("image_thumb",uploadedImageUrl);
-                        postMap.put("latitude", latitude);
-                        postMap.put("longitude", longitude);
-                        postMap.put("kilometer", binding.location.getProgress());
-                        postMap.put("timeStamp", FieldValue.serverTimestamp());
+                        firebaseFirestore.collection("Users").document(firebaseID).update("image", uploadedImageUrl);
 
-                        firebaseFirestore.collection("Posts").add(postMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentReference> task) {
-                                if (task.isSuccessful()) {
-                                    if (progressDialog!=null){
-                                        progressDialog.dismiss();
-                                    }
+                        if (progressDialog!=null){
+                            progressDialog.dismiss();
+                        }
 
-                                    Toast.makeText(PostActivity.this, "Successfully Posted", Toast.LENGTH_LONG).show();
-//                                    finish();
-                                    Handler handler = new Handler();
-                                    handler.postDelayed(new Runnable() {
-                                        public void run() {
-                                            try {
-                                                Intent intent = new Intent(PostActivity.this, HomeActivity.class);
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                startActivity(intent);
-                                            }finally {
-                                                finish();
-                                            }
-                                        }
-                                    }, 300);
+                        Toast.makeText(getActivity(), "Profile Successfully Updated", Toast.LENGTH_LONG).show();
+
+                        if(uploadedImageUrl!=null){
+
+                            Glide.with(context).
+                                    load(uploadedImageUrl).
+                                    error(AvatarGenerator.Companion.avatarImage(context, 200,
+                                            AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
+                                            user_name,false))
+                                    .placeholder(AvatarGenerator.Companion.avatarImage(context, 200,
+                                            AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
+                                            user_name,false))
+                                    .into(imgProifle);
+                        }
+                        else {
+                            Glide.with(context)
+                                    .load(AvatarGenerator.Companion.avatarImage(context, 200,
+                                            AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
+                                            user_name,false))
+                                    .into(imgProifle);
+                        }
 
 
-                                } else {
-                                    if (progressDialog!=null){
-                                        progressDialog.dismiss();
-                                    }
-
-                                    Toast.makeText(PostActivity.this, "Error" + task.getException().toString(), Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
 
                     } else {
                         if (progressDialog!=null){
@@ -607,7 +526,7 @@ public class PostActivity extends AppCompatActivity {
     private void uploadImageToStorage(final FireBaseResponseCallBack callBack) {
 
         InputStream stream;
-        StorageReference imageStorageRef = storageReference.child("post_images/" +
+        StorageReference imageStorageRef = storageReference.child("profile_images/" +
                 System.currentTimeMillis() +
                 ".jpg");
 
@@ -654,10 +573,6 @@ public class PostActivity extends AppCompatActivity {
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            if (progressDialog!=null){
-                progressDialog.dismiss();
-            }
-            Toast.makeText(context, "Image Uploading Failed", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -696,18 +611,6 @@ public class PostActivity extends AppCompatActivity {
             if (cursor != null) {
                 cursor.close();
             }
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        try {
-            Intent intent = new Intent(PostActivity.this, HomeActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        }finally {
-            finish();
         }
     }
 
@@ -833,5 +736,6 @@ public class PostActivity extends AppCompatActivity {
     public static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
+
 
 }

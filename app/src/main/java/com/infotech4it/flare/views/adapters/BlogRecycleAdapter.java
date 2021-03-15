@@ -1,19 +1,26 @@
 package com.infotech4it.flare.views.adapters;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.StrictMode;
+import android.provider.MediaStore;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +39,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.infotech4it.flare.R;
 import com.infotech4it.flare.helpers.AvatarGenerator;
+import com.infotech4it.flare.helpers.LoaderDialog;
 import com.infotech4it.flare.views.activities.CommentingActivity;
 import com.infotech4it.flare.views.models.BlogPost;
 import com.infotech4it.flare.views.models.MessageModelClass;
@@ -41,6 +49,7 @@ import com.squareup.picasso.Target;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,10 +69,12 @@ public class BlogRecycleAdapter extends RecyclerView.Adapter<BlogRecycleAdapter.
     String blogPostId, currentUser;
     public List<BlogPost> filterlist;
     private ValueFilter valueFilter;
+    private LoaderDialog loaderDialog;
 
-    public BlogRecycleAdapter(List<BlogPost> blog_list){
+    public BlogRecycleAdapter(List<BlogPost> blog_list, Activity activity){
         this.blogList = blog_list;
         this.filterlist = blog_list;
+        loaderDialog = new LoaderDialog(activity);
     }
 
     @NonNull
@@ -184,7 +195,7 @@ public class BlogRecycleAdapter extends RecyclerView.Adapter<BlogRecycleAdapter.
             });
         }
 
-        holder.BlogLikeBtn.setOnClickListener(new View.OnClickListener() {
+        holder.lyLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -211,7 +222,7 @@ public class BlogRecycleAdapter extends RecyclerView.Adapter<BlogRecycleAdapter.
             }
         });
 
-        holder.BlogCommentBtn.setOnClickListener(new View.OnClickListener() {
+        holder.lyComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent commentIntent = new Intent(context, CommentingActivity.class);
@@ -221,18 +232,26 @@ public class BlogRecycleAdapter extends RecyclerView.Adapter<BlogRecycleAdapter.
             }
         });
 
-        holder.Share.setOnClickListener(new View.OnClickListener() {
+        holder.lyShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                loaderDialog.startLoadingDialog();
                 String share = blogList.get(position).getImage_url();
+                String txt = blogList.get(position).getDesc();
                 if (share!=null && !share.trim().equals("")){
                     if (share.contains("null")){
+                        loaderDialog.dismiss();
                         Toast.makeText(context, "You cannot share this Post", Toast.LENGTH_SHORT).show();
                     }else {
+                        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+                        builder.detectFileUriExposure();
+                        StrictMode.setVmPolicy(builder.build());
                         shareImage(share, context);
+
                     }
 
                 }else{
+                    loaderDialog.dismiss();
                     Toast.makeText(context, "You cannot share this Post", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -257,6 +276,7 @@ public class BlogRecycleAdapter extends RecyclerView.Adapter<BlogRecycleAdapter.
         private ImageView BlogLikeBtn;
         private ImageView BlogCommentBtn;
         private ImageView Share;
+        LinearLayout lyLike, lyComment, lyShare;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -271,6 +291,9 @@ public class BlogRecycleAdapter extends RecyclerView.Adapter<BlogRecycleAdapter.
             postImage = mview.findViewById(R.id.blogImage);
             userImage = mview.findViewById(R.id.commentProfilePic);
             Share = mview.findViewById(R.id.share);
+            lyLike = mview.findViewById(R.id.ly_like);
+            lyComment = mview.findViewById(R.id.ly_comment);
+            lyShare = mview.findViewById(R.id.ly_share);
         }
 
         public void setDescText(String descText){
@@ -295,7 +318,7 @@ public class BlogRecycleAdapter extends RecyclerView.Adapter<BlogRecycleAdapter.
         public void setImage(String downloadURL, String thumb_url){
             if (downloadURL.contains("null")){
                 postImage.setVisibility(View.GONE);
-
+                lyShare.setVisibility(View.GONE);
             }else {
                 postImage.setVisibility(View.VISIBLE);
                 Glide.with(context).load(downloadURL).thumbnail(Glide.with(context).load(thumb_url)).into(postImage);
@@ -375,10 +398,14 @@ public class BlogRecycleAdapter extends RecyclerView.Adapter<BlogRecycleAdapter.
         }
     }
 
-
-    static public void shareImage(String url, final Context context) {
+    public void shareImage(String url, final Context context) {
         Picasso.get().load(url).into(new Target() {
             @Override public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+
+                StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+                builder.detectFileUriExposure();
+                StrictMode.setVmPolicy(builder.build());
+                loaderDialog.dismiss();
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.setType("image/*");
                 i.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(bitmap, context));
@@ -387,11 +414,14 @@ public class BlogRecycleAdapter extends RecyclerView.Adapter<BlogRecycleAdapter.
 
             @Override
             public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-
+                loaderDialog.dismiss();
             }
 
-            @Override public void onPrepareLoad(Drawable placeHolderDrawable) { }
+            @Override public void onPrepareLoad(Drawable placeHolderDrawable) {
+                loaderDialog.dismiss();
+            }
         });
+
     }
     static public Uri getLocalBitmapUri(Bitmap bmp, Context context) {
         Uri bmpUri = null;
@@ -405,6 +435,12 @@ public class BlogRecycleAdapter extends RecyclerView.Adapter<BlogRecycleAdapter.
             e.printStackTrace();
         }
         return bmpUri;
+    }
+
+    public void updateAdapter(List<BlogPost>updatedList){
+        blogList = updatedList;
+        filterlist = updatedList;
+        notifyDataSetChanged();
     }
 
 
