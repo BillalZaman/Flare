@@ -256,6 +256,16 @@ public class BlogRecycleAdapter extends RecyclerView.Adapter<BlogRecycleAdapter.
                 }
             }
         });
+
+        holder.lyTrack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String lati = String.valueOf(blogList.get(position).getLatitude());
+                String longi = String.valueOf(blogList.get(position).getLongitude());
+
+                startGoolgeMaps(lati, longi);
+            }
+        });
     }
 
     @Override
@@ -276,7 +286,7 @@ public class BlogRecycleAdapter extends RecyclerView.Adapter<BlogRecycleAdapter.
         private ImageView BlogLikeBtn;
         private ImageView BlogCommentBtn;
         private ImageView Share;
-        LinearLayout lyLike, lyComment, lyShare;
+        LinearLayout lyLike, lyComment, lyShare, lyTrack;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -294,6 +304,7 @@ public class BlogRecycleAdapter extends RecyclerView.Adapter<BlogRecycleAdapter.
             lyLike = mview.findViewById(R.id.ly_like);
             lyComment = mview.findViewById(R.id.ly_comment);
             lyShare = mview.findViewById(R.id.ly_share);
+            lyTrack = mview.findViewById(R.id.ly_track);
         }
 
         public void setDescText(String descText){
@@ -443,5 +454,14 @@ public class BlogRecycleAdapter extends RecyclerView.Adapter<BlogRecycleAdapter.
         notifyDataSetChanged();
     }
 
+
+    private void startGoolgeMaps(String latitude, String longitude) {
+
+        String uri = "http://maps.google.com/maps?daddr=" + latitude + "," + longitude + " (" + "Destination" + ")";
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        intent.setPackage("com.google.android.apps.maps");
+        context.startActivity(intent);
+
+    }
 
 }

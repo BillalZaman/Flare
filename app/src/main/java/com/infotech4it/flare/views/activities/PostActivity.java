@@ -494,6 +494,10 @@ public class PostActivity extends AppCompatActivity {
                         String mPath = getPathFromUri(context, mImageUri);
                         imagePath = mPath;
                     }
+
+                    String mPath = getPathFromUri(context, mImageUri);
+                    imagePath = mPath;
+
                     Glide.with(binding.imgStatus.getContext())
                             .load(mImageUri)
                             .error(R.drawable.ic_profile)

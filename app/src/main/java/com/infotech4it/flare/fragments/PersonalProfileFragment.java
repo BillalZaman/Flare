@@ -423,6 +423,10 @@ public class PersonalProfileFragment extends Fragment {
                         String mPath = getPathFromUri(context, mImageUri);
                         imagePath = mPath;
                     }
+
+                    String mPath = getPathFromUri(context, mImageUri);
+                    imagePath = mPath;
+
                     setUpGroup();
 
                 }  else {

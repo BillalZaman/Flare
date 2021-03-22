@@ -99,7 +99,7 @@ public class RegistrationActivity extends AppCompatActivity {
                             databaseReference.child(firebaseID).child("number").setValue(binding.edtNumber.getText().toString());
                             databaseReference.child(firebaseID).child("password").setValue(binding.edtPassword.getText().toString());
                             databaseReference.child(firebaseID).child("profile").setValue("null");
-                            mAuth.getCurrentUser().sendEmailVerification();
+//                            mAuth.getCurrentUser().sendEmailVerification();
                             saveToFirestore(binding.edtName.getText().toString(), firebaseID);
                         }
                     }
@@ -152,7 +152,8 @@ public class RegistrationActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()){
                     loaderDialog.dismiss();
-                    Toast.makeText(RegistrationActivity.this, "Successfully Registered. Open your Email for verification", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegistrationActivity.this, "Successfully Registered", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(RegistrationActivity.this, "Successfully Registered. Open your Email for verification", Toast.LENGTH_SHORT).show();
                     finish();
                 }
                 else {

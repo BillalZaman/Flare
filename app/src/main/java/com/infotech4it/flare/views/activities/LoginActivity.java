@@ -89,17 +89,24 @@ public class LoginActivity extends AppCompatActivity {
 
                         } else {
 
-                            if (mAuth.getCurrentUser().isEmailVerified()){
-                                String firebaseID = task.getResult().getUser().getUid();
-                                databaseReference.child(firebaseID).child("password").setValue(binding.edtPassword.getText().toString());
-                                loaderDialog.dismiss();
-                                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            }else {
-                                loaderDialog.dismiss();
-                                Toast.makeText(LoginActivity.this, "Please verify your Email Address", Toast.LENGTH_LONG).show();
-                            }
+                            String firebaseID = task.getResult().getUser().getUid();
+                            databaseReference.child(firebaseID).child("password").setValue(binding.edtPassword.getText().toString());
+                            loaderDialog.dismiss();
+                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+
+//                            if (mAuth.getCurrentUser().isEmailVerified()){
+//                                String firebaseID = task.getResult().getUser().getUid();
+//                                databaseReference.child(firebaseID).child("password").setValue(binding.edtPassword.getText().toString());
+//                                loaderDialog.dismiss();
+//                                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+//                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                                startActivity(intent);
+//                            }else {
+//                                loaderDialog.dismiss();
+//                                Toast.makeText(LoginActivity.this, "Please verify your Email Address", Toast.LENGTH_LONG).show();
+//                            }
 
                         }
                     }
