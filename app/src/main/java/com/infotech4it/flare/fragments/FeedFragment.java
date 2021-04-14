@@ -95,35 +95,31 @@ public class FeedFragment extends Fragment {
                         .orderBy("timeStamp", Query.Direction.DESCENDING)
                         .limit(3);
 
-                firstQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                firstQuery.addSnapshotListener((documentSnapshots, e) -> {
 
-                        if (documentSnapshots.size()>0){
+                    if (documentSnapshots.size()>0){
+                        if (firstPageLoaded) {
+                            lastVisible = documentSnapshots.getDocuments()
+                                    .get(documentSnapshots.size() - 1);
+                        }
+                    }
+
+
+                    for (DocumentChange doc : documentSnapshots.getDocumentChanges()) {
+                        if (doc.getType() == DocumentChange.Type.ADDED) {
+                            String BlogPostId = doc.getDocument().getId();
+                            BlogPost blogPost = doc.getDocument().toObject(BlogPost.class).withId(BlogPostId);
+
                             if (firstPageLoaded) {
-                                lastVisible = documentSnapshots.getDocuments()
-                                        .get(documentSnapshots.size() - 1);
+                                blogList.add(blogPost);
                             }
-                        }
-
-
-                        for (DocumentChange doc : documentSnapshots.getDocumentChanges()) {
-                            if (doc.getType() == DocumentChange.Type.ADDED) {
-                                String BlogPostId = doc.getDocument().getId();
-                                BlogPost blogPost = doc.getDocument().toObject(BlogPost.class).withId(BlogPostId);
-
-                                if (firstPageLoaded) {
-                                    blogList.add(blogPost);
-                                }
-                                else {
-                                    blogList.add(0, blogPost);
-                                }
-
-
-                                blogRecycleAdapter.notifyDataSetChanged();
+                            else {
+                                blogList.add(0, blogPost);
                             }
-                        }
 
+
+                            blogRecycleAdapter.notifyDataSetChanged();
+                        }
                     }
 
                 });

@@ -3,25 +3,22 @@ package com.infotech4it.flare.views.activities;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
-import com.bumptech.glide.Glide;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.infotech4it.flare.R;
 import com.infotech4it.flare.constant.Constant;
 import com.infotech4it.flare.databinding.ActivityHomeBinding;
+import com.infotech4it.flare.fragments.AllUsersListingFragment;
 import com.infotech4it.flare.fragments.ChatFragment;
-import com.infotech4it.flare.fragments.FeedFragment;
-import com.infotech4it.flare.fragments.FindFriendFragment;
+import com.infotech4it.flare.fragments.FindFriendActivity;
 import com.infotech4it.flare.fragments.LocationFeedFragment;
 import com.infotech4it.flare.fragments.ProfileFragment;
-import com.infotech4it.flare.fragments.SettingFragment;
+import com.infotech4it.flare.fragments.MoreFragment;
+import com.infotech4it.flare.fragments.RequestsActivity;
 import com.infotech4it.flare.helpers.PreferenceHelper;
 import com.infotech4it.flare.helpers.UIHelper;
 import com.infotech4it.flare.interfaces.ChatInterface;
@@ -29,8 +26,6 @@ import com.infotech4it.flare.interfaces.ImgClickInterface;
 import com.infotech4it.flare.interfaces.MoreInterface;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.logging.ConsoleHandler;
 
 import pl.aprilapps.easyphotopicker.ChooserType;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
@@ -45,9 +40,9 @@ public class HomeActivity extends AppCompatActivity implements MoreInterface, Ch
 //    private FeedFragment feedFragment = new FeedFragment();
     private LocationFeedFragment feedFragment = new LocationFeedFragment();
     private ProfileFragment profileFragment = new ProfileFragment();
-    private FindFriendFragment findFriend = new FindFriendFragment();
+    private AllUsersListingFragment findFriend = new AllUsersListingFragment();
     private ChatFragment chatFragment = new ChatFragment();
-    private SettingFragment settingFragment = new SettingFragment();
+    private MoreFragment moreFragment = new MoreFragment();
     private EasyImage easyImage;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
@@ -92,7 +87,7 @@ public class HomeActivity extends AppCompatActivity implements MoreInterface, Ch
                     break;
                 }
                 case R.id.action_Setting: {
-                    UIHelper.replaceFragment(HomeActivity.this, R.id.framelayout, settingFragment);
+                    UIHelper.replaceFragment(HomeActivity.this, R.id.framelayout, moreFragment);
                     break;
                 }
             }
@@ -104,16 +99,24 @@ public class HomeActivity extends AppCompatActivity implements MoreInterface, Ch
     public void onMoreClick(int position) {
         switch (position) {
             case 0: {
+                UIHelper.openActivity(this, FindFriendActivity.class);
+                break;
+            }
+            case 1:{
+                UIHelper.openActivity(this, RequestsActivity.class);
+                break;
+            }
+            case 2: {
                 // change password
                 UIHelper.openActivity(this, ChangePasswordActivity.class);
                 break;
             }
-            case 1: {
+            case 3: {
                 // feedback
                 UIHelper.openActivity(this, FeedbackActivity.class);
                 break;
             }
-            case 2: {
+            case 4: {
                 // logout
                 try {
                     mAuth.signOut();
@@ -123,20 +126,14 @@ public class HomeActivity extends AppCompatActivity implements MoreInterface, Ch
                     startActivity(intent);
                     finish();
                 }
-
                 break;
             }
-            case 3: {
-                // more app
-
-                break;
-            }
-            case 4: {
+            case 5: {
                 // share our app
 
                 break;
             }
-            case 5: {
+            case 6: {
                 //privacy policy
 
                 break;
@@ -188,7 +185,6 @@ public class HomeActivity extends AppCompatActivity implements MoreInterface, Ch
                         if (mediaFiles[0].getFile().exists()) {
                             PreferenceHelper.getInstance().setString(Constant.IMAGE_URL, String.valueOf(mediaFiles[0].getFile()));
 //                            Glide.with(this).load(mediaFiles[0].getFile()).into(binding.imgcover);
-                            UIHelper.showLongToastInCenter(HomeActivity.this, ""+mediaFiles[0].getFile());
                         }
                     }
                 });
@@ -197,6 +193,8 @@ public class HomeActivity extends AppCompatActivity implements MoreInterface, Ch
     @Override
     public void ImgClick(String place) {
         if (place.equalsIgnoreCase("user")){
+            selectImage();
+        } else {
             selectImage();
         }
     }

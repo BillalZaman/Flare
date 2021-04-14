@@ -23,6 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.infotech4it.flare.R;
+import com.infotech4it.flare.databinding.FragmentAllUsersListingBinding;
 import com.infotech4it.flare.databinding.FragmentUserFriendListBinding;
 import com.infotech4it.flare.helpers.FirebaseParser;
 import com.infotech4it.flare.helpers.RecyclerItemClickListener;
@@ -51,55 +52,23 @@ public class AllUsersListingFragment extends Fragment {
     DatabaseReference databaseReferenceUserTable = database.getReference("user_table");
     Context mContext;
     ProgressDialog progressDialog;
-    RecyclerView recyclerView;
+    private FragmentAllUsersListingBinding binding;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_all_users_listing, container, false);
-    }
+        binding = DataBindingUtil.inflate(inflater,
+                R.layout.fragment_all_users_listing, container, false);
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         mContext=getContext();
         currentUserId = mAuth.getCurrentUser().getUid();
         progressDialog = new ProgressDialog(mContext);
         progressDialog.setTitle("Loading ...");
         progressDialog.show();
-        recyclerView = view.findViewById(R.id.recyclerview);
 
-        mAdapter = new SelectUserForChat(mContext, arrayList);
-        recyclerView.setAdapter(mAdapter);
-
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference tripsRef = rootRef.child("user_table");
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                    if (!ds.getKey().contains(currentUserId)){
-                        SelectStudentForChat slct = ds.getValue(SelectStudentForChat.class);
-                        arrayList.add(slct);
-                    }
-
-                }
-
-                if (progressDialog.isShowing()) {
-                    progressDialog.dismiss();
-                }
-
-                mAdapter.update(arrayList);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        };
-        tripsRef.addListenerForSingleValueEvent(valueEventListener);
-
-        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(),
-                recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
+        binding.recyclerview.addOnItemTouchListener(new RecyclerItemClickListener(getContext(),
+                binding.recyclerview, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
 
@@ -128,8 +97,40 @@ public class AllUsersListingFragment extends Fragment {
             }
         }));
 
+        return binding.getRoot();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference().child("user_table");
+        DatabaseReference tripsRef = rootRef.child("user_table");
+        rootRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    if (!ds.getKey().contains(currentUserId)){
+                        SelectStudentForChat slct = ds.getValue(SelectStudentForChat.class);
+                        arrayList.add(slct);
+                    }
 
 
+
+                }
+
+                if (progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+                mAdapter = new SelectUserForChat(mContext, arrayList);
+                binding.recyclerview.setAdapter(mAdapter);
+                mAdapter.update(arrayList);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
+
+    }
 }

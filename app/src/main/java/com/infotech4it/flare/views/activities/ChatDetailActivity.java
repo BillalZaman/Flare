@@ -1,20 +1,16 @@
 package com.infotech4it.flare.views.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.content.Context;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,21 +19,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.infotech4it.flare.R;
 import com.infotech4it.flare.databinding.ActivityChatDetailBinding;
 import com.infotech4it.flare.helpers.AAppGlobal;
-import com.infotech4it.flare.helpers.AvatarGenerator;
 import com.infotech4it.flare.helpers.LoaderDialog;
-import com.infotech4it.flare.interfaces.ChatScreenMediaListener;
 import com.infotech4it.flare.views.adapters.MessageDetailAdapter;
 import com.infotech4it.flare.views.models.FirebaseUserTableModal;
 import com.infotech4it.flare.views.models.MessageDetailClass;
 import com.infotech4it.flare.views.models.MessageModelClass;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,30 +36,30 @@ import java.util.Map;
 
 public class ChatDetailActivity extends AppCompatActivity {
 
-    private ActivityChatDetailBinding binding;
-    private Context context;
-    private MessageDetailAdapter mAdapter;
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference databaseReferenceUserTable = database.getReference("user_table");
     DatabaseReference databaseReferenceOneToOneChat = database.getReference("one_to_one_chat");
-    private FirebaseUserTableModal firebaseUserTableModal = new FirebaseUserTableModal();
     List<MessageDetailClass> mChats = new ArrayList<>();
     MessageDetailClass messageDetailClass = new MessageDetailClass();
-    private MessageModelClass messageModelClass = new MessageModelClass();
     String chatId = null;
+    private ActivityChatDetailBinding binding;
+    private Context context;
+    private MessageDetailAdapter mAdapter;
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private final FirebaseUserTableModal firebaseUserTableModal = new FirebaseUserTableModal();
+    private MessageModelClass messageModelClass = new MessageModelClass();
     private int unReadMessageCount = 1;
     private boolean loadChatFirstTime = true;
     private String currentUserId;
     private long sendMessageTime = 0;
-    private String mUserId, mUserName,mUserEmail, mPhotoURL;
+    private String mUserId, mUserName, mUserEmail, mPhotoURL;
     private LoaderDialog loaderDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         currentUserId = mAuth.getCurrentUser().getUid();
-        binding = DataBindingUtil.setContentView(this,R.layout.activity_chat_detail);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_chat_detail);
         init();
         loaderDialog = new LoaderDialog(this);
 
@@ -83,7 +73,7 @@ public class ChatDetailActivity extends AppCompatActivity {
             mAdapter.setData(messageModelClass, true);
         } else {
             getUserData();
-            if(mUserId!=null) {
+            if (mUserId != null) {
                 databaseReferenceUserTable.child(mUserId).addListenerForSingleValueEvent(
                         new ValueEventListener() {
                             @Override
@@ -118,12 +108,7 @@ public class ChatDetailActivity extends AppCompatActivity {
         mAdapter = new MessageDetailAdapter(mChats, context, currentUserId);
         binding.rvChat.setAdapter(mAdapter);
 
-        binding.imgBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });
+        binding.imgBack.setOnClickListener(view -> finish());
 
         binding.edittextChatbox.setOnFocusChangeListener((view, isFocused) -> {
             if (!isFocused) {
@@ -154,7 +139,7 @@ public class ChatDetailActivity extends AppCompatActivity {
                     DatabaseReference db_node_second = FirebaseDatabase.getInstance().getReference().child("one_to_one_chat").child(chatId);
                     db_node_second.removeValue();
 
-                }finally {
+                } finally {
                     finish();
                 }
             }
@@ -228,21 +213,21 @@ public class ChatDetailActivity extends AppCompatActivity {
                     child(String.valueOf(chatId));
 
             Map<String, Object> map = new HashMap<>();
-            map.put("u_id",String.valueOf(mUserId));
-            map.put("chat_id",String.valueOf(chatId));
-            map.put("recent_message",String.valueOf(message));
-            map.put("unread_message_count",0);
-            map.put("time",sendMessageTime);
-            map.put("f_id",String.valueOf(currentUserId));
+            map.put("u_id", String.valueOf(mUserId));
+            map.put("chat_id", String.valueOf(chatId));
+            map.put("recent_message", String.valueOf(message));
+            map.put("unread_message_count", 0);
+            map.put("time", sendMessageTime);
+            map.put("f_id", String.valueOf(currentUserId));
             referenceSender.setValue(map);
 
             Map<String, Object> mapp = new HashMap<>();
-            mapp.put("u_id",String.valueOf(currentUserId));
-            mapp.put("chat_id",chatId);
-            mapp.put("recent_message",message);
-            mapp.put("unread_message_count",unReadMessageCount);
-            mapp.put("time",sendMessageTime);
-            mapp.put("f_id",String.valueOf(currentUserId));
+            mapp.put("u_id", String.valueOf(currentUserId));
+            mapp.put("chat_id", chatId);
+            mapp.put("recent_message", message);
+            mapp.put("unread_message_count", unReadMessageCount);
+            mapp.put("time", sendMessageTime);
+            mapp.put("f_id", String.valueOf(currentUserId));
             referenceReceiver = databaseReferenceUserTable.child(String.valueOf(mUserId)).child("chats")
                     .child(String.valueOf(chatId));
             referenceReceiver.setValue(mapp);
@@ -383,7 +368,7 @@ public class ChatDetailActivity extends AppCompatActivity {
         databaseReferenceChat.addChildEventListener(childEventListener);
     }
 
-    public void StopChat(){
+    public void StopChat() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference rootRef = database.getReference("friends").child(currentUserId);
 
@@ -395,7 +380,7 @@ public class ChatDetailActivity extends AppCompatActivity {
                     binding.edittextChatbox.setVisibility(View.VISIBLE);
                     binding.buttonChatboxSend.setVisibility(View.VISIBLE);
 //                    Toast.makeText(context, "This Person is still friend", Toast.LENGTH_LONG).show();
-                }else {
+                } else {
 //                    Toast.makeText(context, "This Person is no more friend", Toast.LENGTH_LONG).show();
                     binding.nofriend.setVisibility(View.VISIBLE);
                     binding.edittextChatbox.setVisibility(View.GONE);
@@ -411,57 +396,54 @@ public class ChatDetailActivity extends AppCompatActivity {
 
     }
 
-    public void DeleteChat(){
+    public void DeleteChat() {
         loaderDialog.startLoadingDialog();
         database.getReference("user_table").child(currentUserId).child("chats").removeValue()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
 
-                        if (task.isSuccessful()){
+                        if (task.isSuccessful()) {
 
                             database.getReference("user_table").child(mUserId).child("chats").removeValue()
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
 
-                                            if (task.isSuccessful()){
+                                            if (task.isSuccessful()) {
 
                                                 database.getReference("one_to_one_chat").child(chatId).removeValue()
                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task) {
 
-                                                                if (task.isSuccessful()){
+                                                                if (task.isSuccessful()) {
                                                                     RecheckDelete();
 //                                                                    try {
 //                                                                        Toast.makeText(ChatDetailActivity.this, "Chat is Deleted Successfully...!!", Toast.LENGTH_SHORT).show();
 //                                                                    }finally {
 //                                                                        finish();
 //                                                                    }
-                                                                }
-                                                                else {
+                                                                } else {
                                                                     loaderDialog.dismiss();
                                                                 }
                                                             }
                                                         });
 
-                                            }
-                                            else {
+                                            } else {
                                                 loaderDialog.dismiss();
                                             }
                                         }
                                     });
 
-                        }
-                        else {
+                        } else {
                             loaderDialog.dismiss();
                         }
                     }
                 });
     }
 
-    public void RecheckDelete(){
+    public void RecheckDelete() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference rootRef = database.getReference("user_table").child(currentUserId);
 
@@ -474,24 +456,24 @@ public class ChatDetailActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
 
-                                    if (task.isSuccessful()){
+                                    if (task.isSuccessful()) {
                                         try {
                                             loaderDialog.dismiss();
                                             Toast.makeText(ChatDetailActivity.this, "Chat is Deleted Successfully...!!", Toast.LENGTH_SHORT).show();
-                                        }finally {
+                                        } finally {
                                             finish();
                                         }
-                                    }else {
+                                    } else {
                                         loaderDialog.dismiss();
                                     }
                                 }
                             });
 
-                }else {
+                } else {
                     try {
                         loaderDialog.dismiss();
                         Toast.makeText(ChatDetailActivity.this, "Chat is Deleted Successfully...!!", Toast.LENGTH_SHORT).show();
-                    }finally {
+                    } finally {
                         finish();
                     }
                 }

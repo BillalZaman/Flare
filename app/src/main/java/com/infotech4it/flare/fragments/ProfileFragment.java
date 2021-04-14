@@ -116,18 +116,12 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         init();
+        return binding.getRoot();
     }
 
     public void init(){
         context = getActivity();
-        requestStoragePermission();
         binding.setOnClick(this);
 
         PersonalProfileFragment personalProfileFragment = new PersonalProfileFragment();
@@ -174,7 +168,7 @@ public class ProfileFragment extends Fragment {
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
                         if (report.areAllPermissionsGranted()) {
-                            Toast.makeText(getActivity(), "All permissions are granted!", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getActivity(), "All permissions are granted!", Toast.LENGTH_SHORT).show();
                         }
 
                         if (report.isAnyPermissionPermanentlyDenied()) {

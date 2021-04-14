@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Flare.iml" filepath="$PROJECT_DIR$/.idea/modules/Flare.iml" group="Flare" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/app.iml" group="Flare/app" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/library/library.iml" filepath="$PROJECT_DIR$/.idea/modules/library/library.iml" group="Flare/library" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Flare.iml" filepath="$PROJECT_DIR$/.idea/modules/Flare.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Flare.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Flare.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/library/Flare.library.iml" filepath="$PROJECT_DIR$/.idea/modules/library/Flare.library.iml" />
     </modules>
   </component>
 </project>

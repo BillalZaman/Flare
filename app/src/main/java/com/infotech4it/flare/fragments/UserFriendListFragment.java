@@ -57,12 +57,6 @@ public class UserFriendListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_user_friend_list, container, false);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         mContext=getContext();
         currentUserId = mAuth.getCurrentUser().getUid();
         progressDialog = new ProgressDialog(mContext);
@@ -121,7 +115,7 @@ public class UserFriendListFragment extends Fragment {
 
             }
         }));
-
+        return binding.getRoot();
     }
 
     private void loadChat(JSONObject jsonObjectPlayer, String firebaseID, String Name, String Email, String Password, String Phone, String image) {

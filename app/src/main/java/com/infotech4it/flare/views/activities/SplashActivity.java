@@ -13,6 +13,7 @@ import com.infotech4it.flare.helpers.UIHelper;
 
 public class SplashActivity extends AppCompatActivity {
     private ActivitySplashBinding binding;
+    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,15 +24,18 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void init() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
+        handler.postDelayed(() -> {
+            Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
 //                UIHelper.openActivity(SplashActivity.this, LoginActivity.class);
-            }
         },2000);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        handler.removeCallbacksAndMessages(null);
     }
 }

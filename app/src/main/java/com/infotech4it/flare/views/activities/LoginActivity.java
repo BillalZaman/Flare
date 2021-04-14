@@ -95,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
                             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
-
+                            finish();
 //                            if (mAuth.getCurrentUser().isEmailVerified()){
 //                                String firebaseID = task.getResult().getUser().getUid();
 //                                databaseReference.child(firebaseID).child("password").setValue(binding.edtPassword.getText().toString());
@@ -128,5 +128,4 @@ public class LoginActivity extends AppCompatActivity {
         }
         return check;
     }
-
 }

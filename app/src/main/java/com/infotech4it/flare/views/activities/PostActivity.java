@@ -90,6 +90,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,6 +127,8 @@ public class PostActivity extends AppCompatActivity {
     private LocationCallback locationCallback;
     double longitude, latitude;
     boolean isImage=false;
+    private EasyImage easyImage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +148,14 @@ public class PostActivity extends AppCompatActivity {
         };
         startLocationUpdates();
         turnOnLocation();
+        easyImage = new EasyImage.Builder(this)
+                .setChooserTitle("Pick media")
+                .setCopyImagesToPublicGalleryFolder(false)
+                .setChooserType(ChooserType.CAMERA_AND_GALLERY)
+                .setFolderName("EasyImage sample")
+                .allowMultiple(false)
+                .build();
+
     }
 
     public void init() {
@@ -152,7 +164,6 @@ public class PostActivity extends AppCompatActivity {
         user_id = mauth.getCurrentUser().getUid();
         firebaseFirestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
-        requestStoragePermission();
         getDataUser();
 
     }
@@ -175,12 +186,7 @@ public class PostActivity extends AppCompatActivity {
             // notify user
             new AlertDialog.Builder(context)
                     .setMessage("Turn On GPS Locations")
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                            context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                        }
-                    })
+                    .setPositiveButton("Yes", (paramDialogInterface, paramInt) -> context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)))
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -331,10 +337,12 @@ public class PostActivity extends AppCompatActivity {
                 break;
             }
             case R.id.imgAddPic: {
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent, PICK_IMAGE_REQUEST);
+//                Intent intent = new Intent();
+//                intent.setType("image/*");
+//                intent.setAction(Intent.ACTION_GET_CONTENT);
+//                startActivityForResult(intent, PICK_IMAGE_REQUEST);
+
+                requestStoragePermission();
                 break;
             }
             case R.id.btnPost: {
@@ -370,6 +378,15 @@ public class PostActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(context);
         progressDialog.setTitle("Uploading Post...");
         progressDialog.show();
+
+        Calendar c = Calendar.getInstance();
+        System.out.println("Current time => "+c.getTime());
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = df.format(c.getTime());
+        // formattedDate have current date/time
+        Toast.makeText(this, formattedDate, Toast.LENGTH_SHORT).show();
+
 
         Map<String,Object> postMap = new HashMap<>();
         postMap.put("image_url","null");
@@ -418,37 +435,50 @@ public class PostActivity extends AppCompatActivity {
     }
 
     private void requestStoragePermission() {
-        Dexter.withActivity(this)
-                .withPermissions(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .withListener(new MultiplePermissionsListener() {
-                    @Override
-                    public void onPermissionsChecked(MultiplePermissionsReport report) {
-                        if (report.areAllPermissionsGranted()) {
-                            Toast.makeText(getApplicationContext(), "All permissions are granted!", Toast.LENGTH_SHORT).show();
-                        }
+        String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA};
 
-                        if (report.isAnyPermissionPermanentlyDenied()) {
-                            showSettingsDialog();
-                        }
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-                        token.continuePermissionRequest();
-                    }
-                }).
-                withErrorListener(new PermissionRequestErrorListener() {
-                    @Override
-                    public void onError(DexterError error) {
-                        Toast.makeText(getApplicationContext(), "Error occurred! ", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .onSameThread()
-                .check();
+        if (ContextCompat.checkSelfPermission(this, permission[0]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, permission[1]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, permission[2]) == PackageManager.PERMISSION_GRANTED) {
+            //Toast.makeText(activity, "permission granted", Toast.LENGTH_SHORT).show();
+            selectImage();
+        } else {
+            ActivityCompat.requestPermissions(this, permission, 123);
+        }
     }
 
+    public void selectImage() {
+        try {
+            PackageManager pm = getPackageManager();
+            int hasPerm = pm.checkPermission(CAMERA, getPackageName());
+            final CharSequence[] options = {getResources().getString(R.string.take_photo),
+                    getResources().getString(R.string.chhose_from_gallery),
+                    getResources().getString(R.string.cancel_btn)};
+            androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+            builder.setTitle(getResources().getString(R.string.select_option));
+            builder.setItems(options, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int item) {
+                    if (options[item].equals(getResources().getString(R.string.take_photo))) {
+                        dialog.dismiss();
+                        easyImage.openCameraForImage(PostActivity.this);
+                    } else if (options[item].equals(getResources().getString(R.string.chhose_from_gallery))) {
+                        dialog.dismiss();
+                        easyImage.openGallery(PostActivity.this);
+                    } else if (options[item].equals(getResources().getString(R.string.cancel_btn))) {
+                        dialog.dismiss();
+                    }
+                }
+            });
+            builder.show();
+
+        } catch (Exception e) {
+            Toast.makeText(this, getResources().getString(R.string.camera_permission_error), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
     private void showSettingsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(PostActivity.this);
         builder.setTitle("Need Storage Permission");
@@ -481,34 +511,46 @@ public class PostActivity extends AppCompatActivity {
     protected void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
 
-        if (resultCode == RESULT_OK) {
-            if (reqCode == PICK_IMAGE_REQUEST && data != null && data.getData() != null) {
+//        if (resultCode == RESULT_OK) {
+//            if (reqCode == PICK_IMAGE_REQUEST && data != null && data.getData() != null) {
+//
+//                String fileExtension = getFileExtension(data.getData(), this);
+//                isImage=true;
+//                if (isItImage(fileExtension)) {
+//                    mImageUri = data.getData();
+//                    String path = getRealPathFromUri(context, mImageUri);
+//                    imagePath = path;
+//                    if (imagePath==null){
+//                        String mPath = getPathFromUri(context, mImageUri);
+//                        imagePath = mPath;
+//                    }
+//
+//                    String mPath = getPathFromUri(context, mImageUri);
+//                    imagePath = mPath;
+//
+//                    Glide.with(binding.imgStatus.getContext())
+//                            .load(mImageUri)
+//                            .error(R.drawable.ic_profile)
+//                            .into(binding.imgStatus);
+//
+//                }  else {
+//                    Toast.makeText(this, "Select Valid File", Toast.LENGTH_LONG).show();
+//                }
+//
+//            }
+//        }
 
-                String fileExtension = getFileExtension(data.getData(), this);
-                isImage=true;
-                if (isItImage(fileExtension)) {
-                    mImageUri = data.getData();
-                    String path = getRealPathFromUri(context, mImageUri);
-                    imagePath = path;
-                    if (imagePath==null){
-                        String mPath = getPathFromUri(context, mImageUri);
-                        imagePath = mPath;
-                    }
 
-                    String mPath = getPathFromUri(context, mImageUri);
-                    imagePath = mPath;
-
-                    Glide.with(binding.imgStatus.getContext())
-                            .load(mImageUri)
-                            .error(R.drawable.ic_profile)
-                            .into(binding.imgStatus);
-
-                }  else {
-                    Toast.makeText(this, "Select Valid File", Toast.LENGTH_LONG).show();
+        easyImage.handleActivityResult(reqCode, resultCode, data, this, new DefaultCallback() {
+            @Override
+            public void onMediaFilesPicked(@NotNull MediaFile[] mediaFiles, @NotNull MediaSource mediaSource) {
+                if (mediaFiles[0].getFile().exists()) {
+                   imagePath = String.valueOf(mediaFiles[0].getFile());
+                   isImage = true;
+                   Glide.with(PostActivity.this).load(mediaFiles[0].getFile()).into(binding.imgStatus);
                 }
-
             }
-        }
+        });
     }
 
     private void setUpGroup() {
@@ -540,64 +582,61 @@ public class PostActivity extends AppCompatActivity {
         } else {
 
 
-            uploadImageToStorage(new FireBaseResponseCallBack() {
-                @Override
-                public void onCompleteCallBack(boolean isOk, String message) {
+            uploadImageToStorage((isOk, message) -> {
 
-                    if (isOk) {
-                        uploadedImageUrl=message;
+                if (isOk) {
+                    uploadedImageUrl=message;
 
-                        Map<String,Object> postMap = new HashMap<>();
-                        postMap.put("image_url",uploadedImageUrl);
-                        postMap.put("desc",binding.edtStatusDesc.getText().toString().trim());
-                        postMap.put("user_id",user_id);
-                        postMap.put("user_name",user_name);
-                        postMap.put("image_thumb",uploadedImageUrl);
-                        postMap.put("latitude", latitude);
-                        postMap.put("longitude", longitude);
-                        postMap.put("kilometer", binding.location.getProgress());
-                        postMap.put("timeStamp", FieldValue.serverTimestamp());
+                    Map<String,Object> postMap = new HashMap<>();
+                    postMap.put("image_url",uploadedImageUrl);
+                    postMap.put("desc",binding.edtStatusDesc.getText().toString().trim());
+                    postMap.put("user_id",user_id);
+                    postMap.put("user_name",user_name);
+                    postMap.put("image_thumb",uploadedImageUrl);
+                    postMap.put("latitude", latitude);
+                    postMap.put("longitude", longitude);
+                    postMap.put("kilometer", binding.location.getProgress());
+                    postMap.put("timeStamp", FieldValue.serverTimestamp());
 
-                        firebaseFirestore.collection("Posts").add(postMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentReference> task) {
-                                if (task.isSuccessful()) {
-                                    if (progressDialog!=null){
-                                        progressDialog.dismiss();
-                                    }
-
-                                    Toast.makeText(PostActivity.this, "Successfully Posted", Toast.LENGTH_LONG).show();
-//                                    finish();
-                                    Handler handler = new Handler();
-                                    handler.postDelayed(new Runnable() {
-                                        public void run() {
-                                            try {
-                                                Intent intent = new Intent(PostActivity.this, HomeActivity.class);
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                startActivity(intent);
-                                            }finally {
-                                                finish();
-                                            }
-                                        }
-                                    }, 300);
-
-
-                                } else {
-                                    if (progressDialog!=null){
-                                        progressDialog.dismiss();
-                                    }
-
-                                    Toast.makeText(PostActivity.this, "Error" + task.getException().toString(), Toast.LENGTH_LONG).show();
+                    firebaseFirestore.collection("Posts").add(postMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentReference> task) {
+                            if (task.isSuccessful()) {
+                                if (progressDialog!=null){
+                                    progressDialog.dismiss();
                                 }
-                            }
-                        });
 
-                    } else {
-                        if (progressDialog!=null){
-                            progressDialog.dismiss();
+                                Toast.makeText(PostActivity.this, "Successfully Posted", Toast.LENGTH_LONG).show();
+//                                    finish();
+                                Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    public void run() {
+                                        try {
+                                            Intent intent = new Intent(PostActivity.this, HomeActivity.class);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            startActivity(intent);
+                                        }finally {
+                                            finish();
+                                        }
+                                    }
+                                }, 300);
+
+
+                            } else {
+                                if (progressDialog!=null){
+                                    progressDialog.dismiss();
+                                }
+
+                                Toast.makeText(PostActivity.this, "Error" + task.getException().toString(), Toast.LENGTH_LONG).show();
+                            }
                         }
-                        callBack.onCompleteCallBack(false, message);
+                    });
+
+                } else {
+                    if (progressDialog!=null){
+                        progressDialog.dismiss();
                     }
+                    callBack.onCompleteCallBack(false, message);
                 }
             });
 
@@ -837,5 +876,4 @@ public class PostActivity extends AppCompatActivity {
     public static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
-
 }
