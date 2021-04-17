@@ -3,6 +3,7 @@ package com.infotech4it.flare.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,13 +21,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.infotech4it.flare.R;
@@ -34,13 +34,11 @@ import com.infotech4it.flare.helpers.FirebaseParser;
 import com.infotech4it.flare.views.activities.ChatDetailActivity;
 import com.infotech4it.flare.views.models.Friends;
 import com.infotech4it.flare.views.models.MessageModelClass;
-import com.infotech4it.flare.views.models.SelectStudentForChat;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -50,20 +48,32 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 public class AcceptedFriendsFragment extends Fragment {
 
+    String current_user_id;
+    Context context;
     private View view;
     private RecyclerView chat_list;
-    private int count=0;
+    private int count = 0;
     private DatabaseReference friendsDatabaseReference;
     private DatabaseReference userDatabaseReference;
     private FirebaseAuth mAuth;
     private String currentUserId;
-    String current_user_id;
-    Context context;
 
     public AcceptedFriendsFragment() {
         // Required empty public constructor
     }
 
+    public static JSONObject getJSON(DataSnapshot dataSnapshot) {
+        Gson gson = new Gson();
+        JSONObject jsonObject = null;
+
+        try {
+            jsonObject = new JSONObject(gson.toJson(dataSnapshot.getValue()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonObject;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -88,7 +98,6 @@ public class AcceptedFriendsFragment extends Fragment {
         chat_list.setLayoutManager(linearLayoutManager);
 
 
-
         return view;
     }
 
@@ -107,41 +116,44 @@ public class AcceptedFriendsFragment extends Fragment {
                 userDatabaseReference.child(userID).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
+                        if (dataSnapshot.exists()) {
                             final String userName = dataSnapshot.child("name").getValue().toString();
                             final String userEmail = dataSnapshot.child("email").getValue().toString();
                             final String userProfile = dataSnapshot.child("profile").getValue().toString();
+                            final String latitude = dataSnapshot.child("latitude").getKey().toString();
+                            final String longitude = dataSnapshot.child("longitude").getKey().toString();
 
-                            if(userProfile!=null && !userProfile.trim().equals("")){
+                            if (userProfile != null && !userProfile.trim().equals("")) {
 
                                 Glide.with(holder.user_photo.getContext()).
                                         load(userProfile).
                                         error(AvatarGenerator.Companion.avatarImage(context, 200,
                                                 AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
-                                                userName,false))
+                                                userName, false))
                                         .placeholder(AvatarGenerator.Companion.avatarImage(context, 200,
                                                 AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
-                                                userName,false))
+                                                userName, false))
                                         .into(holder.user_photo);
-                            }
-                            else {
+                            } else {
                                 Glide.with(holder.user_photo.getContext())
                                         .load(AvatarGenerator.Companion.avatarImage(context, 200,
                                                 AvatarGenerator.AvatarConstants.Companion.getCIRCLE(),
-                                                userName,false))
+                                                userName, false))
                                         .into(holder.user_photo);
                             }
 
                             holder.user_name.setText(userName);
                             holder.user_presence.setText(userEmail);
 
-                            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
+                            holder.location.setOnClickListener(v -> {
+                                String uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?q=loc:%f,%f", latitude
+                                        , longitude);
+                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                                startActivity(intent);
+                            });
 
-                                    loadChat(userID, userName, userEmail);
-
-                                }
+                            holder.itemView.setOnClickListener(v -> {
+                                loadChat(userID, userName, userEmail);
                             });
                         }
 
@@ -167,31 +179,19 @@ public class AcceptedFriendsFragment extends Fragment {
         adapter.startListening();
     }
 
-    public static class ChatsVH extends RecyclerView.ViewHolder{
-        TextView user_name, user_presence;
-        CircleImageView user_photo;
-        public ChatsVH(View itemView) {
-            super(itemView);
-            user_name = itemView.findViewById(R.id.txtUsername);
-            user_photo = itemView.findViewById(R.id.imgFriendUser);
-            user_presence = itemView.findViewById(R.id.txtUserlocation);
-        }
-    }
-
-
     private void loadChat(String firebaseID, String Name, String Email) {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference databaseReferenceUserTable = database.getReference("user_table");
-        count= 0;
+        count = 0;
 
-        DatabaseReference databaseReferenceChat=databaseReferenceUserTable.child(currentUserId).child("chats");
+        DatabaseReference databaseReferenceChat = databaseReferenceUserTable.child(currentUserId).child("chats");
         databaseReferenceChat.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                Iterable<DataSnapshot> iterable=snapshot.getChildren();
-                if (snapshot.getChildrenCount()>0) {
+                Iterable<DataSnapshot> iterable = snapshot.getChildren();
+                if (snapshot.getChildrenCount() > 0) {
                     while (iterable.iterator().hasNext()) {
                         DataSnapshot dataSnapshot = iterable.iterator().next();
                         try {
@@ -199,7 +199,7 @@ public class AcceptedFriendsFragment extends Fragment {
                             JSONObject jsonObject = getJSON(dataSnapshot);
                             MessageModelClass messageModelClass = FirebaseParser.INSTANCE.parseOneToOneChatParser(jsonObject);
                             String compare = String.valueOf(messageModelClass.getuId());
-                            if (firebaseID.contains(compare)){
+                            if (firebaseID.contains(compare)) {
                                 String chat_id = messageModelClass.getChatId();
                                 Intent intent = new Intent(getContext(), ChatDetailActivity.class);
                                 intent.putExtra("firebaseID", firebaseID);
@@ -210,7 +210,7 @@ public class AcceptedFriendsFragment extends Fragment {
 
                                 break;
 
-                            }else {
+                            } else {
                                 Intent intent = new Intent(getContext(), ChatDetailActivity.class);
                                 intent.putExtra("firebaseID", firebaseID);
                                 intent.putExtra("Name", Name);
@@ -249,7 +249,7 @@ public class AcceptedFriendsFragment extends Fragment {
                         }
                     }
 
-                }else {
+                } else {
                     Intent intent = new Intent(getContext(), ChatDetailActivity.class);
                     intent.putExtra("firebaseID", firebaseID);
                     intent.putExtra("Name", Name);
@@ -270,18 +270,17 @@ public class AcceptedFriendsFragment extends Fragment {
 
     }
 
-    public static JSONObject getJSON(DataSnapshot dataSnapshot) {
-        Gson gson=new Gson();
-        JSONObject jsonObject=null;
+    public static class ChatsVH extends RecyclerView.ViewHolder {
+        TextView user_name, user_presence;
+        ImageView location;
+        CircleImageView user_photo;
 
-        try {
-            jsonObject = new JSONObject(gson.toJson(dataSnapshot.getValue()));
-        } catch (JSONException e) {
-            e.printStackTrace();
+        public ChatsVH(View itemView) {
+            super(itemView);
+            user_name = itemView.findViewById(R.id.txtUsername);
+            user_photo = itemView.findViewById(R.id.imgFriendUser);
+            user_presence = itemView.findViewById(R.id.txtUserlocation);
+            location = itemView.findViewById(R.id.imgLocat);
         }
-
-        return jsonObject;
     }
-
-
 }

@@ -22,14 +22,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="@font/poppins_medium"
             android:gravity="center|start"
             android:hint=""
             android:textColor="@color/black"
             android:textSize="@dimen/textnormal"
             app:layout_constraintBottom_toBottomOf="@+id/imgFriendUser"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imgLocat"
             app:layout_constraintStart_toEndOf="@+id/imgFriendUser"
             app:layout_constraintTop_toTopOf="@+id/imgFriendUser"
             app:layout_constraintVertical_bias="0.19" />
@@ -57,6 +57,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imgFriendUser" />
+
+        <ImageView
+            android:id="@+id/imgLocat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:padding="10dp"
+            app:layout_constraintBottom_toBottomOf="@+id/imgFriendUser"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/imgFriendUser"
+            app:srcCompat="@drawable/ic_baseline_location_on_24" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

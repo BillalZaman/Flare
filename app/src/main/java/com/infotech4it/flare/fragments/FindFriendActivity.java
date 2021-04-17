@@ -1,13 +1,14 @@
 package com.infotech4it.flare.fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -29,7 +30,6 @@ import com.infotech4it.flare.R;
 import com.infotech4it.flare.databinding.FragmentFindFriendBinding;
 import com.infotech4it.flare.helpers.AvatarGenerator;
 import com.infotech4it.flare.helpers.FirebaseParser;
-import com.infotech4it.flare.helpers.UIHelper;
 import com.infotech4it.flare.views.activities.ChatDetailActivity;
 import com.infotech4it.flare.views.adapters.FindFriendAdapter;
 import com.infotech4it.flare.views.models.ChatModel;
@@ -40,6 +40,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -177,6 +178,8 @@ public class FindFriendActivity extends AppCompatActivity {
                             final String userName = dataSnapshot.child("name").getValue().toString();
                             final String userEmail = dataSnapshot.child("email").getValue().toString();
                             final String userProfile = dataSnapshot.child("profile").getValue().toString();
+                            final String latitude = dataSnapshot.child("latitude").getKey();
+                            final String longitude = dataSnapshot.child("longitude").getKey();
 
                             if(userProfile!=null && !userProfile.trim().equals("")){
 
@@ -202,14 +205,17 @@ public class FindFriendActivity extends AppCompatActivity {
                             holder.user_name.setText(userName);
                             holder.user_presence.setText(userEmail);
 
-                            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-
-                                    loadChat(userID, userName, userEmail);
-
-                                }
+                            holder.location.setOnClickListener(v -> {
+                                String uri = String.format(Locale.ENGLISH,
+                                        "http://maps.google.com/maps?q=loc:%f,%f",
+                                        28.43242324,
+                                        77.8977673);
+                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                                startActivity(intent);
                             });
+
+
+                            holder.itemView.setOnClickListener(v -> loadChat(userID, userName, userEmail));
                         }
 
                     }
@@ -238,10 +244,14 @@ public class FindFriendActivity extends AppCompatActivity {
     public static class ChatsVH extends RecyclerView.ViewHolder{
         TextView user_name, user_presence;
         CircleImageView user_photo;
+        ImageView location;
+
         public ChatsVH(View itemView) {
             super(itemView);
             user_name = itemView.findViewById(R.id.txtUsername);
             user_photo = itemView.findViewById(R.id.imgFriendUser);
+
+            location = itemView.findViewById(R.id.imgLocat);
             user_presence = itemView.findViewById(R.id.txtUserlocation);
         }
     }
